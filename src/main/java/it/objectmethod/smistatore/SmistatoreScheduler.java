@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.Fattura;
+import it.objectmethod.smistatore.model.Fattura.Stato;
 import it.objectmethod.smistatore.model.UserHandlerReturnEntity;
 import it.objectmethod.smistatore.repository.ApplicationConfigRepository;
 import it.objectmethod.smistatore.repository.ClienteRepository;
@@ -70,11 +71,11 @@ public class SmistatoreScheduler {
 
 					subFolder= "\\"+clienteTrovato.getName();
 					fattura.setIdCliente(clienteTrovato.getId());
-					fattura.setStato("smistato");
+					fattura.setStato(Stato.PROCESSED);;
 				} else {
 					subFolder= "\\scarti";
 					fattura.setIdCliente(0);
-					fattura.setStato("errore");
+					fattura.setStato(Stato.DISCARDED);
 
 				}
 				File destFile = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+subFolder);

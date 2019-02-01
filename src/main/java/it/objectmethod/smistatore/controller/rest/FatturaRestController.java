@@ -14,7 +14,7 @@ import it.objectmethod.smistatore.repository.FatturaRepository;
 
 @RestController
 @RequestMapping("/api")
-public class ListaFattureInErroreOSmistateRestController {
+public class FatturaRestController {
 
 	@Autowired
 	FatturaRepository fatturaRepo;

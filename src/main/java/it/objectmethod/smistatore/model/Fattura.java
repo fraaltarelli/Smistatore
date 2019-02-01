@@ -2,6 +2,8 @@ package it.objectmethod.smistatore.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MapsId;
@@ -11,6 +13,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name="fattura")
 public class Fattura {
+
+	public enum Stato {
+	    PROCESSED,
+	    DISCARDED,
+	    CHECK_REQ
+	}
+
 	
 	@GeneratedValue
 	@Id
@@ -28,8 +37,8 @@ public class Fattura {
 	@Column(name="data_documento")
 	private String dataDocumento;
 	
-	@Column(name="stato")
-	private String stato;
+	@Enumerated(EnumType.STRING)
+	private Stato stato;
 	
 	
 	public Integer getId() {
@@ -72,15 +81,13 @@ public class Fattura {
 		this.dataDocumento = dataDocumento;
 	}
 
-	public String getStato() {
+	public Stato getStato() {
 		return stato;
 	}
 
-	public void setStato(String stato) {
+	public void setStato(Stato stato) {
 		this.stato = stato;
 	}
-	
-	
 	
 
 }
