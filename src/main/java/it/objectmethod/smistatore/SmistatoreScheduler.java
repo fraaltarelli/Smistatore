@@ -57,11 +57,13 @@ public class SmistatoreScheduler {
 				Integer numeroDocumento = entity.getNumeroDocumento();
 				fattura.setNumeroDocumento(numeroDocumento);
 				fattura.setDataDocumento(dataDocumento);
+				
+				clienteTrovato = clienteRepo.findOneBySearchedVatNumber(partitaIva);
 
-				if(clienteRepo.findOneBySearchedVatNumber(partitaIva)!=null)
-					clienteTrovato = clienteRepo.findOneBySearchedVatNumber(partitaIva);
-				if(clienteRepo.findOneBySearchedFiscalCode(codiceFiscale)!=null)
+				if(clienteTrovato==null) {
 					clienteTrovato = clienteRepo.findOneBySearchedFiscalCode(codiceFiscale);
+				}
+					
 
 				if(clienteTrovato!=null) {
 					System.out.println("cliente trovato id: "+clienteTrovato.getId());

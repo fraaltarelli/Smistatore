@@ -6,9 +6,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="cliente")
+@Table(name="cliente", uniqueConstraints= {
+		@UniqueConstraint(columnNames="partita_iva"),
+        @UniqueConstraint(columnNames="codice_fiscale")
+})
 public class Cliente {
 	
 	@GeneratedValue
