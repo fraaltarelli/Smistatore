@@ -1,5 +1,7 @@
 package it.objectmethod.smistatore;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -9,6 +11,8 @@ import it.objectmethod.smistatore.model.UserHandlerReturnEntity;
 
 @Component
 class UserHandler extends DefaultHandler {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
 
 	UserHandlerReturnEntity entity = new UserHandlerReturnEntity();
 	boolean bCessionarioCommittente = false;
@@ -39,22 +43,23 @@ class UserHandler extends DefaultHandler {
 
 
 		if (bCessionarioCommittente && qName.equalsIgnoreCase("IdCodice")) {
-			System.out.println("Partita Iva: "+ buffer);
+			LOGGER.debug("Partita Iva: "+ buffer);
+//			System.out.println("Partita Iva: "+ buffer);
 			entity.setPartitaIva(buffer.trim());
 		}
 
 		if (!bClienteTrovato && bCessionarioCommittente && qName.equalsIgnoreCase("CodiceFiscale")) {
-			System.out.println("Codice fiscale: "+ buffer);
+			LOGGER.debug("Codice fiscale: "+ buffer);
 			entity.setCodiceFiscale(buffer.trim());
 			bCessionarioCommittente = false;
 		} 
 
 		if(bDatiGeneraliDocumento && qName.equalsIgnoreCase("Data")) {
-			System.out.println("Data documento: "+ buffer);
+			LOGGER.debug("Data documento: "+ buffer);
 			entity.setDataDocumento(buffer.trim());
 		}
 		if(bDatiGeneraliDocumento && qName.equalsIgnoreCase("Numero")) {
-			System.out.println("Numero documento: "+ buffer);
+			LOGGER.debug("Numero documento: "+ buffer);
 			entity.setNumeroDocumento(Integer.parseInt(buffer.trim()));
 			bDatiGeneraliDocumento = false;
 		}

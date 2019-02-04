@@ -10,6 +10,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,8 @@ import it.objectmethod.smistatore.repository.FatturaRepository;
 
 @Component
 public class SmistatoreScheduler {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
 
 	@Autowired
 	ApplicationConfigRepository applicationConfigRepo;
@@ -46,7 +50,7 @@ public class SmistatoreScheduler {
 
 		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(inputDirectory)) {
 			for (Path path : directoryStream) {
-				System.out.println("copying " + path.toString());
+				LOGGER.debug("copying " + path.toString());
 
 				Fattura fattura = new Fattura();
 				Cliente clienteTrovato=null;
@@ -68,7 +72,7 @@ public class SmistatoreScheduler {
 					
 
 				if(clienteTrovato!=null) {
-					System.out.println("cliente trovato id: "+clienteTrovato.getId());
+					LOGGER.debug("cliente trovato id: "+clienteTrovato.getId());
 
 					subFolder= "\\"+clienteTrovato.getName();
 					fattura.setIdCliente(clienteTrovato.getId());
@@ -86,7 +90,7 @@ public class SmistatoreScheduler {
 
 				fattura.setNomeFile(FilenameUtils.getName(d2.toString()));
 
-				System.out.println("destination File=" + d2);
+				LOGGER.debug("destination File=" + d2);
 				Files.move(path, d2, REPLACE_EXISTING);
 				fatturaRepo.save(fattura);
 

@@ -10,14 +10,16 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import it.objectmethod.smistatore.service.LoggingService;
 
 @Component
 @Order
 public class TransactionFilter implements Filter {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
 
 	@Override
 	public void doFilter(
@@ -26,11 +28,9 @@ public class TransactionFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 
 		HttpServletRequest req = (HttpServletRequest) request;
-        LoggingService myserv = new LoggingService();
-        myserv.doStuff(req.getRequestURI());
-		System.out.println("passato per il filtro,  "+req.getRequestURI());
+		LOGGER.debug("passato per il filtro,  "+req.getRequestURI());
 		chain.doFilter(request, response);
-		System.out.println("Committing a transaction for req : {}"+ req.getRequestURI());
+		LOGGER.debug("Committing a transaction for req : {}"+ req.getRequestURI());
 	}
 
 	@Override

@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.objectmethod.smistatore.TransactionFilter;
 import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.Fattura;
 import it.objectmethod.smistatore.model.Fattura.Stato;
@@ -21,6 +24,8 @@ import it.objectmethod.smistatore.repository.FatturaRepository;
 @RestController
 @RequestMapping("/api")
 public class ClienteRestController {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
 
 	@Autowired
 	ApplicationConfigRepository applicationConfigRepo;
@@ -47,11 +52,11 @@ public class ClienteRestController {
 			fattura.setIdCliente(clienteId);
 			fattura.setStato(Stato.CHECK_REQ);
 			fatturaRepo.save(fattura);
-			System.out.println("Spostamento fattura riuscito");
+			LOGGER.debug("Spostamento fattura riuscito");
 		}
 
 		else {
-			System.out.println("Spostamento fattura non eseguibile");
+			LOGGER.debug("Spostamento fattura non eseguibile");
 		}
 
 
