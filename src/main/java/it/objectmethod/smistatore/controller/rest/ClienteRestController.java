@@ -21,32 +21,40 @@ import it.objectmethod.smistatore.repository.FatturaRepository;
 @RestController
 @RequestMapping("/api")
 public class ClienteRestController {
-	
+
 	@Autowired
 	ApplicationConfigRepository applicationConfigRepo;
-	
+
 	@Autowired
 	FatturaRepository fatturaRepo;
-	
+
 	@Autowired
 	ClienteRepository clienteRepo;
-	
-	@GetMapping("cliente/spostamentoFattura/{clienteId}/{fatturaId}")
+
+	@GetMapping("/cliente/spostamentoFattura/{clienteId}/{fatturaId}")
 	void findByStatus(@PathVariable("clienteId") Integer clienteId, @PathVariable("fatturaId") Integer fatturaId){
 		Cliente cliente = clienteRepo.findOne(clienteId);
 		Fattura fattura = fatturaRepo.findOne(fatturaId);
-		File sourceDir = new File(fattura.getNomeFile());
-		File destDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\"+cliente.getName());
-		try {
-			FileUtils.moveFileToDirectory(sourceDir, destDir, true);
-		} catch (IOException e) {
-			e.printStackTrace();
+
+		if(fattura.getStato()==Stato.DISCARDED) {
+			File sourceDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\scarti\\"+fattura.getNomeFile());
+			File destDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\"+cliente.getName());
+			try {
+				FileUtils.moveFileToDirectory(sourceDir, destDir, true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			fattura.setIdCliente(clienteId);
+			fattura.setStato(Stato.CHECK_REQ);
+			fatturaRepo.save(fattura);
+			System.out.println("Spostamento fattura riuscito");
 		}
-		fattura.setIdCliente(clienteId);
-		fattura.setStato(Stato.CHECK_REQ);
-		fatturaRepo.save(fattura);
-		
-		
+
+		else {
+			System.out.println("Spostamento fattura non eseguibile");
+		}
+
+
 	}
 
 }

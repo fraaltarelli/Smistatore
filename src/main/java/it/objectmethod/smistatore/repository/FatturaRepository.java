@@ -14,6 +14,6 @@ import it.objectmethod.smistatore.model.Fattura;
 public interface FatturaRepository extends JpaRepository<Fattura, Integer>{
 	
 	@Query("select f from Fattura f where f.stato= :status")
-	public List<Fattura> findBySearchedStatus(@Param("status") String status);
+	public List<Fattura> findBySearchedStatus(@Param("status") Enum status);
 
 }

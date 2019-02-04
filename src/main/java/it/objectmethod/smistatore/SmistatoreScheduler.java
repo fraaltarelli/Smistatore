@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -83,7 +84,7 @@ public class SmistatoreScheduler {
 				Path outputDirectory = destFile.toPath();
 				Path d2 = outputDirectory.resolve(path.getFileName());	
 
-				fattura.setNomeFile(d2.toString());
+				fattura.setNomeFile(FilenameUtils.getName(d2.toString()));
 
 				System.out.println("destination File=" + d2);
 				Files.move(path, d2, REPLACE_EXISTING);

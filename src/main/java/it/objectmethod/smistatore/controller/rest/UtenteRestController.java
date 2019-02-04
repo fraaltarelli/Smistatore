@@ -9,21 +9,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.objectmethod.smistatore.model.Fattura;
-import it.objectmethod.smistatore.model.Fattura.Stato;
-import it.objectmethod.smistatore.repository.FatturaRepository;
+import it.objectmethod.smistatore.model.Utente;
+import it.objectmethod.smistatore.repository.UtenteRepository;
 
 
 @RestController
 @RequestMapping("/api")
-public class FatturaRestController {
+public class UtenteRestController {
 
 	@Autowired
-	FatturaRepository fatturaRepo;
+	UtenteRepository utenteRepo;
 	
-	@GetMapping("/fattura/find-by-searchedStatus/{status}")
-	List<Fattura> findByStatus(@PathVariable("status") String status){
-		
-		Stato stato = Stato.valueOf(status);
-		return fatturaRepo.findBySearchedStatus(stato);
+	@GetMapping("/utente/login/{username}/{password}")
+	Utente login(@PathVariable("username") String username, @PathVariable("password") String password){
+		return utenteRepo.login(username, password);
 	}
+	
+	
 }
