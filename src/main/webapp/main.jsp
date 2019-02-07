@@ -15,12 +15,30 @@
 	
 </script>
 <script type="text/javascript" src="/js/utente.js"></script>
+<script type="text/javascript" src="/js/fattura.js"></script>
+<script type="text/javascript" src="/js/cliente.js"></script>
 
 </head>
 <body>
 	<input id="username" type="text" placeholder="username">
 	<input id="password" type="text" placeholder="password">
 	<button onclick="login()"> login </button>
+	<br>
+	<input id="statoFattura" type="text" size="60" placeholder="stato fattura (uno tra: PROCESSED, CHECK_REQ, DISCARDED)">
+	<button onclick="findByStatus()"> trova fatture da stato fattura</button>
+    <br>
+    Cliente id: 
+    <input id="clienteId" type="number" value="0">
+    Fattura id:
+    <input id="fatturaId" type="number" value="0">
+    <button onclick="spostamentoFattura()"> spostamento fattura id (di scarto) a cliente id </button>
+	<br>
+	<br>
+	<br>
+	Token: 
+	<p id="token"> effettua il login </p>
+	Messaggio:
+	<p id="messaggio"> </p>
 
 
 	<script

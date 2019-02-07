@@ -27,7 +27,7 @@ import it.objectmethod.smistatore.repository.FatturaRepository;
 @Component
 public class SmistatoreScheduler {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SmistatoreScheduler.class);
 
 	@Autowired
 	ApplicationConfigRepository applicationConfigRepo;

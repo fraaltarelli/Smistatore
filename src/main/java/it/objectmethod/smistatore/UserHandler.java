@@ -12,7 +12,7 @@ import it.objectmethod.smistatore.model.UserHandlerReturnEntity;
 @Component
 class UserHandler extends DefaultHandler {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserHandler.class);
 
 	UserHandlerReturnEntity entity = new UserHandlerReturnEntity();
 	boolean bCessionarioCommittente = false;
