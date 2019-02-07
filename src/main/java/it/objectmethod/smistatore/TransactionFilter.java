@@ -26,10 +26,10 @@ import it.objectmethod.smistatore.model.RaccoltaToken;
 @Order
 public class TransactionFilter implements Filter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
-	
+
 	@Autowired
 	UtenteRestController utenteRest;
-	
+
 	@Autowired
 	RaccoltaToken raccoltaToken;
 
@@ -38,34 +38,11 @@ public class TransactionFilter implements Filter {
 			ServletRequest request, 
 			ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {	
-//		if(utenteRest.bLogin==false) {
-//			
-//		}
-		String auth = ((HttpServletRequest) request).getHeader("Authorization");
-		if(auth!=null && raccoltaToken.getRaccoltaToken()!= null) {
-			if(raccoltaToken.getRaccoltaToken().containsValue(auth)) {
-			HttpServletRequest req = (HttpServletRequest) request;
-			HttpServletResponse res = (HttpServletResponse) response;
-			LOGGER.debug("Starting a transaction for req : {}", req.getRequestURI());
-			LOGGER.debug("Logging Request  {} : {}", req.getMethod(), req.getRequestURI());
-			chain.doFilter(request, response);
-			LOGGER.debug("Committing a transaction for req : {}", req.getRequestURI());
-			LOGGER.debug("Logging Response :{}",  res.getContentType());
-			}
-		}
-		else if(auth==null){
-			HttpServletRequest req = (HttpServletRequest) request;
-			HttpServletResponse res = (HttpServletResponse) response;
-			LOGGER.debug("Starting a transaction for req : {}", req.getRequestURI());
-			LOGGER.debug("Logging Request  {} : {}", req.getMethod(), req.getRequestURI());
-			chain.doFilter(request, response);
-			LOGGER.debug("Committing a transaction for req : {}", req.getRequestURI());
-			LOGGER.debug("Logging Response :{}",  res.getContentType());
-		}
-		else {
-			LOGGER.debug(((HttpServletRequest) request).getRequestURI().trim());
-		}
 		
+		//aggiungere come eccezione url di login
+		String auth = ((HttpServletRequest) request).getHeader("Authorization");
+		//check su url, controllo poi il token che mi sono passato e in base a quello decido se andare avanti o meno.
+
 	}
 
 	@Override

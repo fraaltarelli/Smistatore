@@ -18,7 +18,6 @@ import it.objectmethod.smistatore.repository.UtenteRepository;
 @RestController
 @RequestMapping("/api")
 public class UtenteRestController {
-	//	public boolean bLogin = false;
 
 	@Autowired
 	RaccoltaToken raccoltaToken;
@@ -26,11 +25,11 @@ public class UtenteRestController {
 	@Autowired
 	UtenteRepository utenteRepo;
 
-	@GetMapping("/utente/login/{username}/{password}")
+	@GetMapping("/utente/login/{username}/{password}") //NO PASSWORD E UTENTE NELL'URL
 	String login(@PathVariable("username") String username, @PathVariable("password") String password){
 		Utente utente = new Utente();
 		int utenteId = 0;
-		String token ="login non riuscito";
+		String token ="login non riuscito"; //Nella variabile token ci vanno solo token
 
 		utente = utenteRepo.login(username, password);
 
@@ -44,10 +43,9 @@ public class UtenteRestController {
 
 			Map<Integer,String> map =  new HashMap<Integer,String>();
 			if(raccoltaToken.getRaccoltaToken() == null) {
-				map.put(utenteId, token);
+				map.put(utenteId, token); //usare token come chiave, id utente come value
 				raccoltaToken.setRaccoltaToken(map);
-			}
-			else {
+			} else {
 				map = raccoltaToken.getRaccoltaToken();
 				map.put(utenteId, token);
 				raccoltaToken.setRaccoltaToken(map);
