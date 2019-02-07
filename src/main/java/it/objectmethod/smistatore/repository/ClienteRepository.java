@@ -18,5 +18,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer>{
 	
 	@Query("select c from Cliente c where c.codiceFiscale = :codiceFiscaleCC")
 	Cliente findOneBySearchedFiscalCode(@Param("codiceFiscaleCC") String codiceFiscaleCC);
+	
+	Cliente findByName(String name);
 
 }

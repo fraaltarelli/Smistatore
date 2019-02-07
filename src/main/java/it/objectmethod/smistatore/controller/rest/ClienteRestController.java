@@ -36,10 +36,10 @@ public class ClienteRestController {
 	@Autowired
 	ClienteRepository clienteRepo;
 
-	@GetMapping("/cliente/spostamentoFattura/{clienteId}/{fatturaId}")
-	String spostamentoFattura(@PathVariable("clienteId") Integer clienteId, @PathVariable("fatturaId") Integer fatturaId){
-		Cliente cliente = clienteRepo.findOne(clienteId);
-		Fattura fattura = fatturaRepo.findOne(fatturaId);
+	@GetMapping("/cliente/spostamentoFattura/{clienteNome}/{fatturaNome}")
+	String spostamentoFattura(@PathVariable("clienteNome") String clienteNome, @PathVariable("fatturaNome") String fatturaNome){
+		Cliente cliente = clienteRepo.findByName(clienteNome);
+		Fattura fattura = fatturaRepo.findBynomeFile(fatturaNome);
 		String messaggio = "spostamento fattura non eseguibile";
 
 		if(cliente!=null && fattura!=null) {
@@ -51,7 +51,7 @@ public class ClienteRestController {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				fattura.setIdCliente(clienteId);
+				fattura.setIdCliente(cliente.getId());
 				fattura.setStato(Stato.CHECK_REQ);
 				fatturaRepo.save(fattura);
 				LOGGER.debug("Spostamento fattura riuscito");

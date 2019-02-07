@@ -18,28 +18,41 @@
 <script type="text/javascript" src="/js/fattura.js"></script>
 <script type="text/javascript" src="/js/cliente.js"></script>
 
+<link rel="stylesheet" type="text/css" href="/css/style.css">
+
 </head>
 <body>
-	<input id="username" type="text" placeholder="username">
-	<input id="password" type="text" placeholder="password">
-	<button onclick="login()"> login </button>
-	<br>
-	<input id="statoFattura" type="text" size="60" placeholder="stato fattura (uno tra: PROCESSED, CHECK_REQ, DISCARDED)">
-	<button onclick="findByStatus()"> trova fatture da stato fattura</button>
-    <br>
-    Cliente id: 
-    <input id="clienteId" type="number" value="0">
-    Fattura id:
-    <input id="fatturaId" type="number" value="0">
-    <button onclick="spostamentoFattura()"> spostamento fattura id (di scarto) a cliente id </button>
-	<br>
-	<br>
-	<br>
-	Token: 
-	<p id="token"> effettua il login </p>
-	Messaggio:
-	<p id="messaggio"> </p>
 
+	<div id="divMain">
+		<div id="loginDiv">
+			<input id="username" type="text" placeholder="username"> <input
+				id="password" type="text" placeholder="password">
+
+			<button onclick="login()">login</button>
+
+		</div>
+
+		<br>
+		<div id="loggatoDiv" style="display: none;">
+			<br> <input id="statoFattura" type="text" size="60"
+				placeholder="stato fattura (uno tra: PROCESSED, CHECK_REQ, DISCARDED)">
+
+			<button onclick="findByStatus()">trova fatture da stato
+				fattura</button>
+			<br> Cliente: <input id="clienteNome" type="text">
+			Fattura: <input id="fatturaNome" type="text">
+
+			<button onclick="spostamentoFattura()">spostamento fattura
+				di scarto (nome file) a cliente (nome)</button>
+
+			<br> <br> <br> Token:
+			<p id="token"></p>
+
+		</div>
+
+		<br> <br> Messaggio:
+		<p id="messaggio">Effettua il login</p>
+	</div>
 
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
