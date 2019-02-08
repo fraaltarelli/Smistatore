@@ -1,9 +1,14 @@
 package it.objectmethod.smistatore.model;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -27,6 +32,20 @@ public class Cliente {
 	@Column(name="codice_fiscale")
 	private String codiceFiscale;
 	
+	@OneToMany
+	List<Utente> utenti;
+	
+	
+	public List<Utente> getUtenti() {
+		return utenti;
+	}
+
+	public void setUtenti(List<Utente> utenti) {
+		this.utenti = utenti;
+	}
+
+	
+
 	public Integer getId() {
 		return id;
 	}
@@ -34,7 +53,7 @@ public class Cliente {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

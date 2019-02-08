@@ -1,6 +1,8 @@
 package it.objectmethod.smistatore.controller.rest;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.RaccoltaToken;
 import it.objectmethod.smistatore.model.Utente;
 import it.objectmethod.smistatore.repository.UtenteRepository;

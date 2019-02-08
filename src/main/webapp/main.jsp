@@ -36,8 +36,12 @@
 
 		<br>
 		<div id="loggatoDiv" style="display: none;">
+	        <div id="tokenDiv">
 	        <br> Token:
 			<p id="token"></p>
+			</div>
+			<br><br>
+			<p id="stampaFattureCliente"></p>
 
 		</div>
 

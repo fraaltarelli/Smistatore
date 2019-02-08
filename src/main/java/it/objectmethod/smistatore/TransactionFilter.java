@@ -40,7 +40,6 @@ public class TransactionFilter implements Filter {
 			ServletRequest request, 
 			ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {
-		boolean farPassare = true;
 		String uri = ((HttpServletRequest) request).getRequestURI();
 		LOGGER.debug("Starting a transaction for req : {}", uri);  
 		//aggiungere come eccezione url di login

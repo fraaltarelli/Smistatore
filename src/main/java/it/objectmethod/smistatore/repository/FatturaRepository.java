@@ -17,4 +17,6 @@ public interface FatturaRepository extends JpaRepository<Fattura, Integer>{
 	public List<Fattura> findBySearchedStatus(@Param("status") Enum status);
 
 	public Fattura findBynomeFile(String name);
+	
+	public List<Fattura> findByidCliente(Integer idCliente);
 }

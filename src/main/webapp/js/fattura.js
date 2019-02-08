@@ -15,3 +15,20 @@ function findByStatus(){
 		}
 	});
 }
+
+function stampaFattureCliente(){
+	var token = $("#token").text();
+	$.ajax({
+		type: "GET",
+		url: "/api/fattura/stampaFattureCliente",
+		cache: false,
+		dataType: "text",
+		headers: {
+		    "Authorization": token
+		  },
+		success: function (fatture) {
+			$("#stampaFattureCliente").text(fatture);
+		}
+	});
+	
+}

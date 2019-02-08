@@ -18,6 +18,8 @@ function login(){
 			$("#loginDiv").hide();
 			$("#loggatoDiv").show();
 			$("#token").text(token);
+			$("#tokenDiv").hide();
+			stampaFattureCliente();
 			}
 			else{
 				$("#messaggio").text("login non valido");
