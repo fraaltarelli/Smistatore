@@ -30,28 +30,18 @@
 
 			<button onclick="login()">login</button>
 
+        <br> <br> Messaggio:
+		<p id="messaggio">Effettua il login</p>
 		</div>
 
 		<br>
 		<div id="loggatoDiv" style="display: none;">
-			<br> <input id="statoFattura" type="text" size="60"
-				placeholder="stato fattura (uno tra: PROCESSED, CHECK_REQ, DISCARDED)">
-
-			<button onclick="findByStatus()">trova fatture da stato
-				fattura</button>
-			<br> Cliente: <input id="clienteNome" type="text">
-			Fattura: <input id="fatturaNome" type="text">
-
-			<button onclick="spostamentoFattura()">spostamento fattura
-				di scarto (nome file) a cliente (nome)</button>
-
-			<br> <br> <br> Token:
+	        <br> Token:
 			<p id="token"></p>
 
 		</div>
 
-		<br> <br> Messaggio:
-		<p id="messaggio">Effettua il login</p>
+		
 	</div>
 
 	<script

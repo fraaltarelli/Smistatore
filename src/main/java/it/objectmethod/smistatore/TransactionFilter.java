@@ -39,31 +39,34 @@ public class TransactionFilter implements Filter {
 	public void doFilter(
 			ServletRequest request, 
 			ServletResponse response, 
-			FilterChain chain) throws IOException, ServletException {	
+			FilterChain chain) throws IOException, ServletException {
+		boolean farPassare = true;
 		String uri = ((HttpServletRequest) request).getRequestURI();
 		//aggiungere come eccezione url di login
-//		if(uri.equals("/api/utente/login")) {
-//			LOGGER.debug("Starting a transaction for req : {}", uri);  
-//			chain.doFilter(request, response);
-//			LOGGER.debug("Committing a transaction for req : {}", uri);
-//		}
-		if(uri.startsWith("api/cliente/spostamentoFattura/") || uri.startsWith("api/fattura/find-by-searchedStatus/")) {
+		if(uri.equals("/api/utente/login")) {
+			LOGGER.debug("Starting a transaction for req : {}", uri);  
+			chain.doFilter(request, response);
+			LOGGER.debug("Committing a transaction for req : {}", uri);
+		}
+		else {
 			String auth = ((HttpServletRequest) request).getHeader("Authorization");
 			//check su url, controllo poi il token che mi sono passato e in base a quello decido se andare avanti o meno.
 			Map <String, Integer> map = raccoltaToken.getRaccoltaToken();
-			if(auth!=null && map.containsKey(auth)) {
+			if(auth!=null) {
+				if(map.containsKey(auth)) {
 				LOGGER.debug("Starting a transaction for req : {}", uri);  
 				chain.doFilter(request, response);
 				LOGGER.debug("Committing a transaction for req : {}", uri);
+				}
+				else {
+					farPassare = false;
+				}
 			}
-			else {
-				destroy();
-			}
-		} else {
-		
+		if(farPassare==true) {
 		LOGGER.debug("Starting a transaction for req : {}", uri);  
 		chain.doFilter(request, response);
 		LOGGER.debug("Committing a transaction for req : {}", uri);
+		}
 		}
 	}
 

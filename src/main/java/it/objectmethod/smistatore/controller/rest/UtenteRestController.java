@@ -44,7 +44,7 @@ public class UtenteRestController {
 
 			Map<String, Integer> map =  raccoltaToken.getRaccoltaToken();
 			map.put(token, utenteId); //usare token come chiave, id utente come value
-			raccoltaToken.raccoltaToken = map;
+			
 		}
 
 

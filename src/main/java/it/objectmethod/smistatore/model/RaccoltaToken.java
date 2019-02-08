@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 public class RaccoltaToken {
 
 	
-	public Map<String, Integer> raccoltaToken;
+	private Map<String, Integer> raccoltaToken;
 
 	public Map<String, Integer> getRaccoltaToken() {
 		if(raccoltaToken==null) {
-			return new HashMap<String, Integer>();
+			raccoltaToken = new HashMap<String, Integer>();
 		}
 		return raccoltaToken;
 	}
