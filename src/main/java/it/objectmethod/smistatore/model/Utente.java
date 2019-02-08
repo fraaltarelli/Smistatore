@@ -20,6 +20,9 @@ public class Utente {
 	@Column(name="password")
 	private String password;
 	
+	@Column(name="id_cliente")
+	private Integer idCliente;
+	
 
 	public Integer getId() {
 		return id;
