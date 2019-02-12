@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,6 +53,20 @@ public class UtenteRestController {
 
 
 		return token;
+	}
+	
+	@GetMapping("utente/isAdmin")
+	public boolean isAdmin(@RequestHeader("Authorization") String token) {
+		boolean isAdmin = false;
+		Map<String, Integer> map = raccoltaToken.getRaccoltaToken();
+		int utenteId=map.get(token);
+		Utente utente = utenteRepo.findOne(utenteId);
+		
+		if(utente.isAdmin()) {
+			isAdmin = true;
+		}
+		
+		return isAdmin;
 	}
 
 

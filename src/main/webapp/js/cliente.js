@@ -1,18 +1,22 @@
-function spostamentoFattura(){
-//	var statoFattura = $("#statoFattura").val();
+function listaClientiPerNomeCercato(){
 	var token = $("#token").text();
-	var clienteNome = $("#clienteNome").val();
-	var fatturaNome = $("#fatturaNome").val();
+	var clienteNome = $("#ricercaNomeCliente").val();
 	$.ajax({
 		type: "GET",
-		url: "/api/cliente/spostamentoFattura/"+clienteNome+"/"+fatturaNome,
+		url: "/api/cliente/by-searchedName/"+clienteNome,
 		cache: false,
-		dataType: "text",
 		headers: {
-		    "Authorization": token
-		  },
-		success: function (messaggio) { 
-			$("#messaggio").text(messaggio);
+			"Authorization": token
+		},
+		success: function (listaClienti) { 
+			var html='<table class="table"><thead> <tr> <th scope="col"> Nome Cliente </th> </tr> </thead> <tbody>';
+			for(var i=0; i<listaClienti.length; i++){
+				html+='<tr> <td>'+listaClienti[i].name+' <button onclick="spostamentoFatture('+"'"+listaClienti[i].name+"'"+')"> assegna a '+listaClienti[i].name+'</button> </td></tr>'
+
+			}
+			html+='</tbody></table>';
+			$("#listaClientiPerNomeCercato").html(html);
 		}
 	});
+
 }

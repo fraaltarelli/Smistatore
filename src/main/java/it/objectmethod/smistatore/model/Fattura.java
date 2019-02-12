@@ -6,9 +6,12 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="fattura")
@@ -27,10 +30,10 @@ public class Fattura {
 	
 	@Column(name="nome_file")
 	private String nomeFile;
-
-	@Column(name="id_cliente")
-	private Integer idCliente;
 	
+	@ManyToOne
+	private Cliente cliente;
+
 	@Column(name="numero_documento")
 	private Integer numeroDocumento;
 	
@@ -39,6 +42,17 @@ public class Fattura {
 	
 	@Enumerated(EnumType.STRING)
 	private Stato stato;
+	
+	
+	
+	
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
 	
 	
 	public Integer getId() {
@@ -55,14 +69,6 @@ public class Fattura {
 
 	public void setNomeFile(String nomeFile) {
 		this.nomeFile = nomeFile;
-	}
-
-	public Integer getIdCliente() {
-		return idCliente;
-	}
-
-	public void setIdCliente(Integer idCliente) {
-		this.idCliente = idCliente;
 	}
 
 	public Integer getNumeroDocumento() {

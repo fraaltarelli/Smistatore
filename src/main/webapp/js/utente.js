@@ -15,11 +15,11 @@ function login(){
 		data: jsonString,
 		success: function (token) {
 			if(token!=""){
-			$("#loginDiv").hide();
-			$("#loggatoDiv").show();
-			$("#token").text(token);
-			$("#tokenDiv").hide();
-			stampaFattureCliente();
+				$("#loginDiv").hide();
+				$("#loggatoDiv").show();
+				$("#token").text(token);
+				$("#tokenDiv").hide();
+				stampaFattureCliente();
 			}
 			else{
 				$("#messaggio").text("login non valido");
@@ -28,21 +28,4 @@ function login(){
 		}
 	});
 }
-
-
-
-
-//$.ajax({
-//	type: "POST",
-//	url: "/api/citta/inserisci-modifica",
-//	cache: false,
-//	contentType: "application/json; charset=utf-8",
-//	data: jsonString,
-//	dataType: "json",
-//	success: function (result) { 
-//		citiesByCountryCode(countryCode);
-//		$("#messaggioForm").text("Salvataggio riuscito della citta "+name);
-//	}
-//
-//});
 

@@ -26,8 +26,19 @@ public class Utente {
 	
 	@ManyToOne
 	private Cliente cliente;
+	
+	@Column(columnDefinition="tinyint(1) default 0")
+	private boolean isAdmin;
 
 	
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 
 	public Cliente getCliente() {
 		return cliente;

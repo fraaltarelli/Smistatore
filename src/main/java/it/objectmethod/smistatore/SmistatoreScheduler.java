@@ -75,11 +75,11 @@ public class SmistatoreScheduler {
 					LOGGER.debug("cliente trovato id: "+clienteTrovato.getId());
 
 					subFolder= "\\"+clienteTrovato.getName();
-					fattura.setIdCliente(clienteTrovato.getId());
+					fattura.setCliente(clienteTrovato);
 					fattura.setStato(Stato.PROCESSED);;
 				} else {
 					subFolder= "\\scarti";
-					fattura.setIdCliente(0);
+					fattura.setCliente(null);
 					fattura.setStato(Stato.DISCARDED);
 
 				}

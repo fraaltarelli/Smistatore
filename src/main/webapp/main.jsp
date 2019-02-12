@@ -1,4 +1,3 @@
-<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -11,9 +10,7 @@
 	integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
 	crossorigin="anonymous">
 <script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
-	
-</script>
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="/js/utente.js"></script>
 <script type="text/javascript" src="/js/fattura.js"></script>
 <script type="text/javascript" src="/js/cliente.js"></script>
@@ -30,22 +27,38 @@
 
 			<button onclick="login()">login</button>
 
-        <br> <br> Messaggio:
-		<p id="messaggio">Effettua il login</p>
+			<br> <br> Messaggio:
+			<p id="messaggio">Effettua il login</p>
 		</div>
 
 		<br>
 		<div id="loggatoDiv" style="display: none;">
-	        <div id="tokenDiv">
-	        <br> Token:
-			<p id="token"></p>
+			<div id="tokenDiv">
+				<br> Token:
+				<p id="token"></p>
 			</div>
-			<br><br>
-			<p id="stampaFattureCliente"></p>
+			<br> <br> <strong id="isAdmin"></strong> <br>
+			<div id="filtroFatturePerStatoDiv"></div>
+			<strong id="riepilogoFattureSelezionate"></strong> 
+			
+			<div id="ricercaClientePerNomeForm"><input type="text"
+				id="ricercaNomeCliente" size="60"
+				placeholder="ricerca Cliente per nome">
 
+			<button onclick="listaClientiPerNomeCercato()">Cerca</button>
+
+			<div id="listaClientiPerNomeCercato">
+			</div>
+            
+            <strong id="messaggioSpostamentoFatture"></strong>
+				
+			</div>
+			<!-- <strong id="messaggio2"></strong> -->
+			<br>
+			<div id="stampaFattureDiv"></div>
 		</div>
 
-		
+
 	</div>
 
 	<script

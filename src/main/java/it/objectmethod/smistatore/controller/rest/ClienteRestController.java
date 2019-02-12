@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,8 +41,8 @@ public class ClienteRestController {
 	@GetMapping("/cliente/spostamentoFattura/{clienteNome}/{fatturaNome}")
 	String spostamentoFattura(@PathVariable("clienteNome") String clienteNome, @PathVariable("fatturaNome") String fatturaNome){
 		Cliente cliente = clienteRepo.findByName(clienteNome);
-		Fattura fattura = fatturaRepo.findBynomeFile(fatturaNome);
-		String messaggio = "spostamento fattura non eseguibile";
+		Fattura fattura = fatturaRepo.findBynomeFile(fatturaNome+".xml");
+		String messaggio = "spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" non eseguibile";
 
 		if(cliente!=null && fattura!=null) {
 			if(fattura.getStato()==Stato.DISCARDED) {
@@ -51,24 +53,36 @@ public class ClienteRestController {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				fattura.setIdCliente(cliente.getId());
+				fattura.setCliente(cliente);
 				fattura.setStato(Stato.CHECK_REQ);
 				fatturaRepo.save(fattura);
-				LOGGER.debug("Spostamento fattura riuscito");
-				messaggio = "spostamento fattura riuscito";
+				LOGGER.debug("Spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" riuscito");
+				messaggio = "spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" riuscito";
 			}
 			else {
-				LOGGER.debug("Spostamento fattura non eseguibile");
+				LOGGER.debug("Spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" non eseguibile");
 			}
 		}
 
 		else {
-			LOGGER.debug("Spostamento fattura non eseguibile");
+			LOGGER.debug("Spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" non eseguibile");
 		}
 
 		return messaggio;
-
-
+	}
+	
+	
+	@PostMapping("/cliente/by-fattura")
+	public Cliente byFattura(@RequestBody Fattura fattura) {
+		
+		Cliente cliente = fattura.getCliente();
+		return cliente;
+	}
+	
+	@GetMapping("/cliente/by-searchedName/{clienteNome}")
+	public List<Cliente> bySearchedName(@PathVariable("clienteNome") String clienteNome){
+		
+		return clienteRepo.findBySearchedName(clienteNome);
 	}
 
 }

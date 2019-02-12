@@ -20,5 +20,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer>{
 	Cliente findOneBySearchedFiscalCode(@Param("codiceFiscaleCC") String codiceFiscaleCC);
 	
 	Cliente findByName(String name);
+	
+	@Query("select c from Cliente c where c.name like CONCAT('%', :searchedName, '%')")
+	List<Cliente> findBySearchedName(@Param("searchedName") String searchedName);
+
 
 }

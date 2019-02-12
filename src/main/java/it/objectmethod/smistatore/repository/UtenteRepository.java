@@ -16,5 +16,6 @@ public interface UtenteRepository extends JpaRepository<Utente, Integer>{
 	
 	@Query("select u.cliente from Utente u where u.id = :id")
 	Cliente findClienteFromId(@Param("id") Integer id);
+	
 
 }

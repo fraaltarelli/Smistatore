@@ -12,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name="cliente", uniqueConstraints= {
 		@UniqueConstraint(columnNames="partita_iva"),
@@ -32,10 +34,22 @@ public class Cliente {
 	@Column(name="codice_fiscale")
 	private String codiceFiscale;
 	
+	@JsonIgnore
 	@OneToMany
 	List<Utente> utenti;
+
+	@OneToMany(mappedBy= "cliente")
+	List<Fattura> fatture;
 	
-	
+	@JsonIgnore
+	public List<Fattura> getFatture() {
+		return fatture;
+	}
+
+	public void setFatture(List<Fattura> fatture) {
+		this.fatture = fatture;
+	}
+
 	public List<Utente> getUtenti() {
 		return utenti;
 	}

@@ -1,5 +1,6 @@
 package it.objectmethod.smistatore.controller.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,25 +28,47 @@ public class FatturaRestController {
 
 	@Autowired
 	FatturaRepository fatturaRepo;
-	
+
 	@Autowired
 	UtenteRepository utenteRepo;
-	
+
 	@Autowired
 	RaccoltaToken raccoltaToken;
-	
+
 	@GetMapping("/fattura/find-by-searchedStatus/{status}")
 	List<Fattura> findByStatus(@PathVariable("status") String status){
-		
+
 		Stato stato = Stato.valueOf(status);
-		return fatturaRepo.findBySearchedStatus(stato);
+		return fatturaRepo.findByStatoFattura(stato);
 	}
-	
-	@GetMapping("/fattura/stampaFattureCliente")
-		List<Fattura> findByIdCliente(@RequestHeader("Authorization") String token){
+
+	@GetMapping("/fattura/ritornaFatture/isAdmin-statoFattura/{isAdmin}/{statoFattura}")
+	List<Fattura> findByIdCliente(@PathVariable("isAdmin") Boolean isAdmin, @PathVariable("statoFattura") String statoFattura, 
+			@RequestHeader("Authorization") String token){
 		Map<String, Integer> map = raccoltaToken.getRaccoltaToken();
 		int utenteId=map.get(token);
 		Cliente cliente = utenteRepo.findClienteFromId(utenteId);
-		return fatturaRepo.findByidCliente(cliente.getId());
+		List<Fattura> list = new ArrayList<Fattura>();
+		Stato stato = null;
+		if (!statoFattura.equals("null"))
+			stato = Stato.valueOf(statoFattura);
+		if(isAdmin == false) {
+			if(stato==null) {
+				list = fatturaRepo.findBycliente(cliente);
+			}
+			else {
+				list = fatturaRepo.findByStatoFatturaCliente(stato, cliente);
+			}
+		}
+		else {
+			if(stato==null) {
+				list= fatturaRepo.findAll();
+			}
+			else {
+				list = fatturaRepo.findByStatoFattura(stato);
+			}
+		}
+		return list;
 	}
+
 }
