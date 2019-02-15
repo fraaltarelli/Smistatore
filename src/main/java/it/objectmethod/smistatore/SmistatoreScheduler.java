@@ -74,7 +74,7 @@ public class SmistatoreScheduler {
 				if(clienteTrovato!=null) {
 					LOGGER.debug("cliente trovato id: "+clienteTrovato.getId());
 
-					subFolder= "\\"+clienteTrovato.getName();
+					subFolder= "\\"+clienteTrovato.getId();
 					fattura.setCliente(clienteTrovato);
 					fattura.setStato(Stato.PROCESSED);;
 				} else {

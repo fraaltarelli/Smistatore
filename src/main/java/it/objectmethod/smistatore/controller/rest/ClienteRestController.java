@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.objectmethod.smistatore.TransactionFilter;
 import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.Fattura;
 import it.objectmethod.smistatore.model.Fattura.Stato;
@@ -38,16 +37,17 @@ public class ClienteRestController {
 	@Autowired
 	ClienteRepository clienteRepo;
 
-	@GetMapping("/cliente/spostamentoFattura/{clienteNome}/{fatturaNome}")
-	String spostamentoFattura(@PathVariable("clienteNome") String clienteNome, @PathVariable("fatturaNome") String fatturaNome){
-		Cliente cliente = clienteRepo.findByName(clienteNome);
-		Fattura fattura = fatturaRepo.findBynomeFile(fatturaNome+".xml");
-		String messaggio = "spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" non eseguibile";
+
+	@GetMapping("/cliente/spostamentoFattura/{clienteId}/{fatturaId}")
+	String spostamentoFattura(@PathVariable("clienteId") Integer clienteId, @PathVariable("fatturaId") Integer fatturaId){
+		Cliente cliente = clienteRepo.findOne(clienteId);
+		Fattura fattura = fatturaRepo.findOne(fatturaId);
+		String messaggio = "spostamento fattura "+fattura.getNomeFile()+" al Cliente "+cliente.getName()+" non eseguibile";
 
 		if(cliente!=null && fattura!=null) {
 			if(fattura.getStato()==Stato.DISCARDED) {
 				File sourceDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\scarti\\"+fattura.getNomeFile());
-				File destDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\"+cliente.getName());
+				File destDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\"+clienteId);
 				try {
 					FileUtils.moveFileToDirectory(sourceDir, destDir, true);
 				} catch (IOException e) {
@@ -56,32 +56,33 @@ public class ClienteRestController {
 				fattura.setCliente(cliente);
 				fattura.setStato(Stato.CHECK_REQ);
 				fatturaRepo.save(fattura);
-				LOGGER.debug("Spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" riuscito");
-				messaggio = "spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" riuscito";
+				LOGGER.debug("Spostamento fattura "+fattura.getNomeFile()+" al Cliente "+cliente.getName()+" riuscito");
+				messaggio = "spostamento fattura "+fattura.getNomeFile()+" al Cliente "+cliente.getName()+" riuscito";
 			}
 			else {
-				LOGGER.debug("Spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" non eseguibile");
+				LOGGER.debug("Spostamento fattura "+fattura.getNomeFile()+" al Cliente "+cliente.getName()+" non eseguibile");
 			}
 		}
 
 		else {
-			LOGGER.debug("Spostamento fattura "+fatturaNome+" al Cliente "+clienteNome+" non eseguibile");
+			LOGGER.debug("Spostamento fattura non eseguibile");
 		}
 
 		return messaggio;
 	}
+
 	
-	
+
 	@PostMapping("/cliente/by-fattura")
 	public Cliente byFattura(@RequestBody Fattura fattura) {
-		
+
 		Cliente cliente = fattura.getCliente();
 		return cliente;
 	}
-	
+
 	@GetMapping("/cliente/by-searchedName/{clienteNome}")
 	public List<Cliente> bySearchedName(@PathVariable("clienteNome") String clienteNome){
-		
+
 		return clienteRepo.findBySearchedName(clienteNome);
 	}
 

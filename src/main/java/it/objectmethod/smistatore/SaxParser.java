@@ -12,6 +12,17 @@ import it.objectmethod.smistatore.model.UserHandlerReturnEntity;
 
 @Component
 public class SaxParser {
+	
+	byte[] pdf;
+	private String nomeFile;
+
+	public String getNomeFile() {
+		return nomeFile;
+	}
+
+	public void setNomeFile(String nomeFile) {
+		this.nomeFile = nomeFile;
+	}
 
 
 	public UserHandlerReturnEntity leggiXml(String pathXml) {
@@ -29,4 +40,9 @@ public class SaxParser {
 		}
 		return userHandler.entity;
 	}
+	
+
 }
+
+
+

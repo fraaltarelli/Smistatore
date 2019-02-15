@@ -20,7 +20,8 @@ public class Fattura {
 	public enum Stato {
 	    PROCESSED,
 	    DISCARDED,
-	    CHECK_REQ
+	    CHECK_REQ,
+	    REFUSED
 	}
 
 	

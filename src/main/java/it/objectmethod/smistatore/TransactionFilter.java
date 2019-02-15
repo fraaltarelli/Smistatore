@@ -48,7 +48,7 @@ public class TransactionFilter implements Filter {
 				|| uri.startsWith("/js") 
 				|| uri.startsWith("/css")
 				|| uri.equals("/main.jsp")) {
-			
+
 			chain.doFilter(request, response);
 			LOGGER.debug("Url allowed : {}", uri);
 		}
@@ -64,7 +64,7 @@ public class TransactionFilter implements Filter {
 
 			}
 		}
-		
+
 	}
 
 	@Override

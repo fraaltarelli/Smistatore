@@ -1,2 +1,11 @@
-#divMain * {margin: 20px;}
-#ricercaClientePerNomeForm {display: none;}
+#divMain * {
+	margin: 20px;
+}
+
+#ricercaClientePerNomeForm {
+	display: none;
+}
+
+#listaClientiPerNomeCercato {
+	display: none;
+}

@@ -39,22 +39,24 @@
 			</div>
 			<br> <br> <strong id="isAdmin"></strong> <br>
 			<div id="filtroFatturePerStatoDiv"></div>
-			<strong id="riepilogoFattureSelezionate"></strong> 
-			
-			<div id="ricercaClientePerNomeForm"><input type="text"
-				id="ricercaNomeCliente" size="60"
-				placeholder="ricerca Cliente per nome">
+			<strong id="riepilogoFattureSelezionate"></strong>
 
-			<button onclick="listaClientiPerNomeCercato()">Cerca</button>
+			<div id="ricercaClientePerNomeForm">
+				<input type="text" id="ricercaNomeCliente" size="60"
+					placeholder="ricerca Cliente per nome">
 
-			<div id="listaClientiPerNomeCercato">
-			</div>
-            
-            <strong id="messaggioSpostamentoFatture"></strong>
-				
+				<button onclick="listaClientiPerNomeCercato()">Cerca</button>
+
+				<strong id="messaggioSpostamentoFatture"></strong>
+
+				<div id="listaClientiPerNomeCercato"></div>
+
 			</div>
 			<!-- <strong id="messaggio2"></strong> -->
 			<br>
+			<button type="button" class="btn btn-secondary"
+				id="assegnaFattureButton" onclick="assegnaAUnCliente()">
+				assegna fatture selezionate a un cliente</button>
 			<div id="stampaFattureDiv"></div>
 		</div>
 
