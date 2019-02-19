@@ -14,6 +14,7 @@ function stampaFattureCliente(statoFattura){
 			}
 			else{
 				$("#assegnaFattureButton").hide();
+				$("#uploadFattura").show();
 				admin = false;
 			}
 
@@ -68,7 +69,8 @@ function mostraFiltroFatture(admin){
 		html+='<button class="dropdown-item" type="button" onclick="stampaFattureCliente(\'DISCARDED\')">DISCARDED</button>'
 			+'<button class="dropdown-item" type="button" onclick="stampaFattureCliente(\'REFUSED\')">REFUSED</button>';
 	}
-	html+='<button class="dropdown-item" type="button" onclick="stampaFattureCliente()">ALL</button>  </div> </div>'
+	html+='<button class="dropdown-item" type="button" onclick="stampaFattureCliente(\'SENT\')">SENT</button>'
+		+'<button class="dropdown-item" type="button" onclick="stampaFattureCliente()">ALL</button>  </div> </div>'
 		+'</div></div>';
 	$("#filtroFatturePerStatoDiv").html(html);
 
@@ -104,20 +106,20 @@ function mostraFatture(fatture){
 		}
 		html+= '><button onclick="scaricaFattura('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+')" >'+fatture[i].nomeFile+'</button></td>';
 		if(admin==false){
-			
+
 			html+='<td> <button style="display: block;" onclick="processaFattura('+"'"+fatture[i].id+"'"+')"';
-			
+
 			if(fatture[i].stato != "CHECK_REQ"){
 				html+= 'disabled';
 			}
-			
+
 			html+='> Processa </button>'
 				+'<button style="display: block;" onclick="rifiutaFattura('+"'"+fatture[i].id+"'"+')"';
 
 			if(fatture[i].stato != "CHECK_REQ"){
 				html+= 'disabled';
 			}
-			
+
 			html+='> Rifiuta </button>  </td>';
 		}
 		html+='<td>'+fatture[i].numeroDocumento+'</td>'
@@ -174,7 +176,7 @@ function processaFattura(fatturaId){
 			stampaFattureCliente();
 		}
 	});
-	
+
 }
 
 
@@ -193,7 +195,7 @@ function rifiutaFattura(fatturaId){
 			stampaFattureCliente();
 		}
 	});
-	
+
 }
 
 
@@ -265,5 +267,35 @@ function spostamentoFatture(clienteId){
 	}
 }
 
+function verificaFileCaricato(){
+
+	var token = $("#token").text();
+	var file = $("#fileUpload")[0].files; 
+
+
+	var formData = new FormData(); 
+	formData.append("file", file[0]);   
+
+	if(file!=undefined){
+		$.ajax({
+			url : "/api/fattura/verificaFileCaricato",
+			type : "POST",
+			data : formData,
+			enctype: 'multipart/form-data',
+			processData: false,
+			contentType: false,
+			headers: {
+				"Authorization": token
+			},
+			success : function(messaggio) {
+				$("#messaggioUploadFattura").text(messaggio);
+				stampaFattureCliente();
+			}
+
+
+		});
+
+	}
+}
 
 

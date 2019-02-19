@@ -7,15 +7,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import it.objectmethod.smistatore.SaxParser;
 import it.objectmethod.smistatore.TransactionFilter;
@@ -35,6 +40,7 @@ import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.Fattura;
 import it.objectmethod.smistatore.model.Fattura.Stato;
 import it.objectmethod.smistatore.model.RaccoltaToken;
+import it.objectmethod.smistatore.model.UserHandlerReturnEntity;
 import it.objectmethod.smistatore.repository.ApplicationConfigRepository;
 import it.objectmethod.smistatore.repository.ClienteRepository;
 import it.objectmethod.smistatore.repository.FatturaRepository;
@@ -44,6 +50,7 @@ import it.objectmethod.smistatore.repository.UtenteRepository;
 @RestController
 @RequestMapping("/api")
 public class FatturaRestController {
+
 
 	@Autowired
 	FatturaRepository fatturaRepo;
@@ -65,8 +72,8 @@ public class FatturaRestController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
 
-	
-	
+
+
 	@RequestMapping(value="fattura/scarica/{idFattura}/{idCliente}", method = RequestMethod.GET)
 	public void downloadFile(
 			@PathVariable("idFattura") Integer idFattura, @PathVariable("idCliente") Integer idCliente,
@@ -101,7 +108,7 @@ public class FatturaRestController {
 		}
 	}
 
-	
+
 
 	@GetMapping("/fattura/rifiuta/{idFattura}")
 	void rifiutaFattura(@PathVariable("idFattura") Integer idFattura) {
@@ -115,7 +122,7 @@ public class FatturaRestController {
 
 		String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
 		String inputPath = outputDirectory+"\\"+idCliente+"\\"+nomeFileXml;
-		String outputPath = outputDirectory+"\\scarti\\"+nomeFileXml;   //forse senza nomeFileXml
+		String outputPath = outputDirectory+"\\scarti\\"+nomeFileXml; 
 		Path input = Paths.get(inputPath);
 		Path output = Paths.get(outputPath);
 		try {
@@ -124,7 +131,7 @@ public class FatturaRestController {
 			e.printStackTrace();
 		}
 	}
-	
+
 
 	@GetMapping("/fattura/processa/{idFattura}")
 	void processaFattura(@PathVariable("idFattura") Integer idFattura) {
@@ -134,7 +141,7 @@ public class FatturaRestController {
 	}
 
 
-	
+
 	@PostMapping("/fattura/fattureId-to-fattureNomeFile")
 	String[] idFatturaToNomeFile(@RequestBody Integer[] fattureId) {
 		String[] fattureNomeFile = new String[fattureId.length];
@@ -147,8 +154,97 @@ public class FatturaRestController {
 		return fattureNomeFile;
 	}
 
-	
-	
+
+
+
+	@RequestMapping(method = RequestMethod.POST, value = "/fattura/verificaFileCaricato")
+	@ResponseBody
+	String verificaFatturaCaricata(@RequestParam("file") MultipartFile fatturaCaricata,
+			@RequestHeader("Authorization") String token) {
+
+		String messaggio = "errore nel caricamento della fattura";
+
+		Map<String, Integer> map = raccoltaToken.getRaccoltaToken();
+		int utenteId=map.get(token);
+		Cliente cliente = utenteRepo.findClienteFromId(utenteId);
+
+		InputStream is=null;
+		try {
+			is = fatturaCaricata.getInputStream();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+		UserHandlerReturnEntity entity = saxParser.verificaXml(is);
+
+
+		Fattura fattura = new Fattura();
+		Cliente clienteTrovato=null;
+
+
+		String partitaIva = entity.getPartitaIva();
+		String codiceFiscale = entity.getCodiceFiscale();
+		String dataDocumento = entity.getDataDocumento();
+		Integer numeroDocumento = entity.getNumeroDocumento();
+
+		fattura.setNumeroDocumento(numeroDocumento);
+		fattura.setDataDocumento(dataDocumento);
+
+		clienteTrovato = clienteRepo.findOneBySearchedVatNumber(partitaIva);
+
+
+		if(clienteTrovato == null) {
+			clienteTrovato = clienteRepo.findOneBySearchedFiscalCode(codiceFiscale);
+		}
+
+
+		if(clienteTrovato!=null) {
+
+			if(clienteTrovato.equals(cliente)) {
+				String subFolder="";
+				subFolder= "\\"+clienteTrovato.getId();
+
+				fattura.setCliente(clienteTrovato);
+				fattura.setStato(Stato.SENT);
+
+
+				String fileOutput = applicationConfigRepo.findValueBySearchedKey("path.output")+subFolder+"\\"+fatturaCaricata.getOriginalFilename();
+				File fatturaFile = new File(fileOutput);
+
+				try {
+					fatturaCaricata.transferTo(fatturaFile);
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+
+				fattura.setNomeFile(fatturaFile.getName());
+				fatturaRepo.save(fattura);
+
+				LOGGER.debug("fattura caricata");
+				messaggio = "fattura caricata";
+			}
+			else {
+				LOGGER.debug("cliente non associato alla fattura");
+			}
+
+		} 
+
+		else {
+			LOGGER.debug("cliente non trovato");
+
+		}
+		return messaggio;
+	}
+
+
+
+
+
+
 	@GetMapping("/fattura/ritornaFatture/isAdmin-statoFattura/{isAdmin}/{statoFattura}")
 	List<Fattura> findByIdCliente(@PathVariable("isAdmin") Boolean isAdmin, @PathVariable("statoFattura") String statoFattura, 
 			@RequestHeader("Authorization") String token){

@@ -22,13 +22,17 @@
 
 	<div id="divMain">
 		<div id="loginDiv">
-			<input id="username" type="text" placeholder="username"> <input
-				id="password" type="text" placeholder="password">
 
-			<button onclick="login()">login</button>
+			<form action="javascript: login()">
+				<input id="username" type="text" placeholder="username"> <input
+					id="password" type="text" placeholder="password">
 
+				<button type="submit">login</button>
+
+			</form>
 			<br> <br> Messaggio:
 			<p id="messaggio">Effettua il login</p>
+
 		</div>
 
 		<br>
@@ -37,7 +41,19 @@
 				<br> Token:
 				<p id="token"></p>
 			</div>
-			<br> <br> <strong id="isAdmin"></strong> <br>
+			<br> <br>
+
+			<div id="uploadFattura">
+
+				<form action="javascript: verificaFileCaricato()">
+					<input id="fileUpload" type="file" name="file" size="40">
+					<button type="submit" class="btn btn-info">Upload file</button>
+				</form>
+				<strong id="messaggioUploadFattura"></strong>
+
+			</div>
+
+			<strong id="isAdmin"></strong> <br>
 			<div id="filtroFatturePerStatoDiv"></div>
 			<strong id="riepilogoFattureSelezionate"></strong>
 

@@ -26,7 +26,7 @@ import it.objectmethod.smistatore.repository.FatturaRepository;
 
 @Component
 public class SmistatoreScheduler {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(SmistatoreScheduler.class);
 
 	@Autowired
@@ -63,13 +63,13 @@ public class SmistatoreScheduler {
 				Integer numeroDocumento = entity.getNumeroDocumento();
 				fattura.setNumeroDocumento(numeroDocumento);
 				fattura.setDataDocumento(dataDocumento);
-				
+
 				clienteTrovato = clienteRepo.findOneBySearchedVatNumber(partitaIva);
 
 				if(clienteTrovato==null) {
 					clienteTrovato = clienteRepo.findOneBySearchedFiscalCode(codiceFiscale);
 				}
-					
+
 
 				if(clienteTrovato!=null) {
 					LOGGER.debug("cliente trovato id: "+clienteTrovato.getId());

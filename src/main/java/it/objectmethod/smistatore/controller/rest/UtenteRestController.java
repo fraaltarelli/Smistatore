@@ -26,11 +26,11 @@ public class UtenteRestController {
 	@Autowired
 	UtenteRepository utenteRepo;
 
-	@PostMapping("/utente/login")   //NO PASSWORD E UTENTE NELL'URL
+	@PostMapping("/utente/login")  
 	String login(@RequestBody Utente utenteJson){
 		Utente utente = new Utente();
 		int utenteId = 0;
-		String token ="";   //Nella variabile token ci vanno solo token
+		String token ="";  
 
 		utente = utenteRepo.login(utenteJson.getUsername(), utenteJson.getPassword());
 
@@ -43,7 +43,7 @@ public class UtenteRestController {
 			token = bytes.toString();
 
 			Map<String, Integer> map =  raccoltaToken.getRaccoltaToken();
-			map.put(token, utenteId);   //usare token come chiave, id utente come value
+			map.put(token, utenteId);  
 			
 		}
 

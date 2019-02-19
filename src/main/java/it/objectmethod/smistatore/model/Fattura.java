@@ -21,7 +21,8 @@ public class Fattura {
 	    PROCESSED,
 	    DISCARDED,
 	    CHECK_REQ,
-	    REFUSED
+	    REFUSED,
+	    SENT
 	}
 
 	

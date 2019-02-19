@@ -42,7 +42,7 @@ public class TransactionFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 		String uri = ((HttpServletRequest) request).getRequestURI();
 		LOGGER.debug("Starting a transaction for req : {}", uri);  
-		//aggiungere come eccezione url di login
+		
 		if(uri.equals("/api/utente/login") 
 				|| uri.equals("/home")
 				|| uri.startsWith("/js") 
