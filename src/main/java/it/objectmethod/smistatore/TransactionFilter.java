@@ -10,16 +10,13 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import it.objectmethod.smistatore.controller.MainController;
 import it.objectmethod.smistatore.controller.rest.UtenteRestController;
 import it.objectmethod.smistatore.model.RaccoltaToken;
 

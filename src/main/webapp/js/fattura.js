@@ -80,10 +80,10 @@ function mostraFiltroFatture(admin){
 
 
 function mostraFatture(fatture){
-	var html = ''
-		+'<table class="table"> <thead> <tr> <th scope="col"> Nome Fattura </th>';
+	var html = '<table class="table"> <thead> <tr> <th scope="col-12">#</th>  <th scope="col"> Nome Fattura </th>'
+		+'<th scope="col"> Foglio di stile </th>';
 	if(admin==false){
-		html+= '<th scope="col"> Risposta';
+		html+= '<th scope="col"> Risposta </th>';
 	}
 	html+='<th scope="col"> Numero Documento </th>'
 		+'<th scope="col"> Data Documento </th>'
@@ -100,11 +100,14 @@ function mostraFatture(fatture){
 			nomeCliente=cliente.name;
 		}
 
-		html += '<tr class="fatture-checkbox"> <td> <input type="checkbox" value="'+fatture[i].id+'" ';
+		html += '<tr class="fatture-checkbox"> <th scope="row">'+(i+1)+'</th>  <td> <input type="checkbox" value="'+fatture[i].id+'" ';
 		if(fatture[i].stato != "DISCARDED"){
 			html+="disabled";
 		}
-		html+= '><button onclick="scaricaFattura('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+')" >'+fatture[i].nomeFile+'</button></td>';
+		html+= '><button onclick="scaricaFattura('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+')" >'+fatture[i].nomeFile+'</button></td>'
+		+'<td> <button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'FoglioStileAssoSoftware.xsl\')" >stile 1</button>'
+		+'<button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'fatturab2b.xsl\')" >stile 2</button></td>';
+
 		if(admin==false){
 
 			html+='<td> <button style="display: block;" onclick="processaFattura('+"'"+fatture[i].id+"'"+')"';
@@ -163,6 +166,31 @@ function scaricaFattura(nomeFattura, idFattura, idCliente){
 
 
 
+function apriFatturaFoglioDiStile(nomeFattura, idFattura, idCliente, foglioDiStile){
+	var token = $("#token").text();
+	$.ajax({
+		type: "GET",
+		url: "/api/fattura/by-xsl/"+idFattura+"/"+idCliente+"/"+foglioDiStile,
+		cache: false,
+		headers: {
+			"Authorization": token
+		},
+		success: function (data) {
+			var w = window.open('about:blank');
+			w.document.open();
+			w.document.write(data);
+			w.document.close();
+
+		}
+	});
+
+}
+
+
+
+
+
+
 function processaFattura(fatturaId){
 	var token = $("#token").text();
 	$.ajax({
@@ -210,26 +238,34 @@ function assegnaAUnCliente(){
 		fattureId.push(fatturaId);
 	});
 
-	$.ajax({
-		type: "POST",
-		url: "/api/fattura/fattureId-to-fattureNomeFile",
-		cache: false,
-		contentType: "application/json",
-		data: JSON.stringify(fattureId),
-		dataType: "json",	
-		traditional: true,
-		headers: {
-			"Authorization": token
-		},
-		success: function (fattureNomeFile) {
-			var text = "Fatture selezionate: ";
-			for (arrayItem of fattureNomeFile)  {
-				text += arrayItem+", ";
+	if(fattureId.length == 0){
+		$("#messaggioSelezioneFatture").text("seleziona almeno una fattura di scarto");
+	}
+	else{
+		$("#messaggioSelezioneFatture").text("");
+
+		$.ajax({
+			type: "POST",
+			url: "/api/fattura/fattureId-to-fattureNomeFile",
+			cache: false,
+			contentType: "application/json",
+			data: JSON.stringify(fattureId),
+			dataType: "json",	
+			traditional: true,
+			headers: {
+				"Authorization": token
+			},
+			success: function (fattureNomeFile) {
+				var text = "Fatture selezionate: ";
+				for (arrayItem of fattureNomeFile)  {
+					text += arrayItem+", ";
+				}
+				$("#riepilogoFattureSelezionate").text(text);
+				$("#ricercaClientePerNomeForm").show();
 			}
-			$("#riepilogoFattureSelezionate").text(text);
-			$("#ricercaClientePerNomeForm").show();
-		}
-	});
+		});
+
+	}
 
 }
 
@@ -290,6 +326,7 @@ function verificaFileCaricato(){
 			success : function(messaggio) {
 				$("#messaggioUploadFattura").text(messaggio);
 				stampaFattureCliente();
+				$("#fileUpload").val("");
 			}
 
 

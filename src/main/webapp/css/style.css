@@ -1,5 +1,9 @@
 #divMain * {
-	margin: 20px;
+	margin: 10px;
+}
+
+#ricercaClientePerNomeForm {
+	margin: 6px;
 }
 
 #ricercaClientePerNomeForm {

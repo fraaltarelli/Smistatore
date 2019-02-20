@@ -4,20 +4,28 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +115,62 @@ public class FatturaRestController {
 			throw new RuntimeException("Can't download the file");
 		}
 	}
+
+
+
+
+	@RequestMapping(value="fattura/by-xsl/{idFattura}/{idCliente}/{foglioDiStile}", method = RequestMethod.GET)
+	public void fatturaHtmlDaFoglioDiStile(
+			@PathVariable("idFattura") Integer idFattura, @PathVariable("idCliente") Integer idCliente,
+			@PathVariable("foglioDiStile") String foglioDiStile, HttpServletResponse response) throws IOException {
+
+		try {
+			Fattura fattura = fatturaRepo.findOne(idFattura);
+			String nomeFileXml = fattura.getNomeFile();
+
+			String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
+			String subFolder = "\\scarti";
+			if(idCliente!=0) {
+				subFolder="\\"+idCliente;
+			}
+			String pathXml = outputDirectory+subFolder+"\\"+nomeFileXml;
+
+
+			try {
+				TransformerFactory factory = TransformerFactory.newInstance();
+				Templates template = factory.newTemplates(new StreamSource(
+						new FileInputStream(outputDirectory+"\\"+foglioDiStile+".xsl")));
+				Transformer xformer = template.newTransformer();
+
+				Source source = new StreamSource(new FileInputStream(pathXml));
+				ServletOutputStream out = response.getOutputStream();
+				Result result = new StreamResult(out);
+
+				xformer.transform(source, result);
+
+				response.flushBuffer();
+				out.close();
+				out.flush();
+
+			} catch (FileNotFoundException e) {
+			} catch (TransformerConfigurationException e) {
+				// An error occurred in the XSL file
+			} catch (TransformerException e) {
+				// An error occurred while applying the XSL file
+				// Get location of error in input file
+
+			}
+
+
+
+		} catch (IOException ex) {
+			LOGGER.debug("inside download get catch");
+			throw new RuntimeException("Can't download the file");
+		}
+	}
+
+
+
 
 
 
@@ -229,12 +293,14 @@ public class FatturaRestController {
 			}
 			else {
 				LOGGER.debug("cliente non associato alla fattura");
+				messaggio = "cliente non associato alla fattura";
 			}
 
 		} 
 
 		else {
 			LOGGER.debug("cliente non trovato");
+			messaggio = "cliente non trovato";
 
 		}
 		return messaggio;

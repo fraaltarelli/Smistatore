@@ -22,7 +22,7 @@
 
 	<div id="divMain">
 		<div id="loginDiv">
-
+			<br>
 			<form action="javascript: login()">
 				<input id="username" type="text" placeholder="username"> <input
 					id="password" type="text" placeholder="password">
@@ -30,18 +30,16 @@
 				<button type="submit">login</button>
 
 			</form>
-			<br> <br> Messaggio:
-			<p id="messaggio">Effettua il login</p>
+			Messaggio: <br> <strong id="messaggio">Effettua il
+				login</strong>
 
 		</div>
 
-		<br>
 		<div id="loggatoDiv" style="display: none;">
 			<div id="tokenDiv">
 				<br> Token:
 				<p id="token"></p>
 			</div>
-			<br> <br>
 
 			<div id="uploadFattura">
 
@@ -58,7 +56,7 @@
 			<strong id="riepilogoFattureSelezionate"></strong>
 
 			<div id="ricercaClientePerNomeForm">
-				<input type="text" id="ricercaNomeCliente" size="60"
+				<input type="text" id="ricercaNomeCliente" size="40"
 					placeholder="ricerca Cliente per nome">
 
 				<button onclick="listaClientiPerNomeCercato()">Cerca</button>
@@ -70,9 +68,10 @@
 			</div>
 			<!-- <strong id="messaggio2"></strong> -->
 			<br>
-			<button type="button" class="btn btn-secondary"
+			<button type="button" class="btn btn-success"
 				id="assegnaFattureButton" onclick="assegnaAUnCliente()">
 				assegna fatture selezionate a un cliente</button>
+			<strong id="messaggioSelezioneFatture"></strong>
 			<div id="stampaFattureDiv"></div>
 		</div>
 
