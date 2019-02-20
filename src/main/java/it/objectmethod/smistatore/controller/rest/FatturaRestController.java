@@ -20,8 +20,6 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -80,6 +78,7 @@ public class FatturaRestController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
 
+	String subFolder = "\\discarded";
 
 
 	@RequestMapping(value="fattura/scarica/{idFattura}/{idCliente}", method = RequestMethod.GET)
@@ -92,7 +91,6 @@ public class FatturaRestController {
 			String nomeFileXml = fattura.getNomeFile();
 
 			String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
-			String subFolder = "\\scarti";
 			if(idCliente!=0) {
 				subFolder="\\"+idCliente;
 			}
@@ -129,47 +127,34 @@ public class FatturaRestController {
 			String nomeFileXml = fattura.getNomeFile();
 
 			String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
-			String subFolder = "\\scarti";
+
 			if(idCliente!=0) {
 				subFolder="\\"+idCliente;
 			}
 			String pathXml = outputDirectory+subFolder+"\\"+nomeFileXml;
 
 
-			try {
-				TransformerFactory factory = TransformerFactory.newInstance();
-				Templates template = factory.newTemplates(new StreamSource(
-						new FileInputStream(outputDirectory+"\\"+foglioDiStile+".xsl")));
-				Transformer xformer = template.newTransformer();
+			TransformerFactory factory = TransformerFactory.newInstance();
+			Templates template = factory.newTemplates(new StreamSource(
+					new FileInputStream(outputDirectory+"\\"+foglioDiStile+".xsl")));
+			Transformer xformer = template.newTransformer();
 
-				Source source = new StreamSource(new FileInputStream(pathXml));
-				ServletOutputStream out = response.getOutputStream();
-				Result result = new StreamResult(out);
+			Source source = new StreamSource(new FileInputStream(pathXml));
+			ServletOutputStream out = response.getOutputStream();
+			Result result = new StreamResult(out);
 
-				xformer.transform(source, result);
+			xformer.transform(source, result);
 
-				response.flushBuffer();
-				out.close();
-				out.flush();
+			response.flushBuffer();
+			out.close();
+			out.flush();
 
-			} catch (FileNotFoundException e) {
-			} catch (TransformerConfigurationException e) {
-				// An error occurred in the XSL file
-			} catch (TransformerException e) {
-				// An error occurred while applying the XSL file
-				// Get location of error in input file
-
-			}
-
-
-
-		} catch (IOException ex) {
-			LOGGER.debug("inside download get catch");
-			throw new RuntimeException("Can't download the file");
+		} catch (Exception e) {
+			LOGGER.debug("errore apertura fattura con foglio di stile");
 		}
+
+
 	}
-
-
 
 
 
@@ -186,7 +171,7 @@ public class FatturaRestController {
 
 		String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
 		String inputPath = outputDirectory+"\\"+idCliente+"\\"+nomeFileXml;
-		String outputPath = outputDirectory+"\\scarti\\"+nomeFileXml; 
+		String outputPath = outputDirectory+"\\discarded\\"+nomeFileXml; 
 		Path input = Paths.get(inputPath);
 		Path output = Paths.get(outputPath);
 		try {
@@ -266,7 +251,6 @@ public class FatturaRestController {
 		if(clienteTrovato!=null) {
 
 			if(clienteTrovato.equals(cliente)) {
-				String subFolder="";
 				subFolder= "\\"+clienteTrovato.getId();
 
 				fattura.setCliente(clienteTrovato);

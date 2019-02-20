@@ -105,8 +105,12 @@ function mostraFatture(fatture){
 			html+="disabled";
 		}
 		html+= '><button onclick="scaricaFattura('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+')" >'+fatture[i].nomeFile+'</button></td>'
-		+'<td> <button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'FoglioStileAssoSoftware.xsl\')" >stile 1</button>'
-		+'<button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'fatturab2b.xsl\')" >stile 2</button></td>';
+		+'<td><span onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'FoglioStileAssoSoftware.xsl\')">'
+        +'<i class="fas fa-align-justify"></i> </span>'
+        +'<span onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'fatturab2b.xsl\')">'
+        +'<i class="fas fa-align-left"></i> </span> </td>';
+//		+'<td> <button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'FoglioStileAssoSoftware.xsl\')" >stile 1</button>'
+//		+'<button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'fatturab2b.xsl\')" >stile 2</button></td>';
 
 		if(admin==false){
 

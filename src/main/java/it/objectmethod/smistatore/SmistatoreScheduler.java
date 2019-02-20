@@ -78,7 +78,7 @@ public class SmistatoreScheduler {
 					fattura.setCliente(clienteTrovato);
 					fattura.setStato(Stato.PROCESSED);;
 				} else {
-					subFolder= "\\scarti";
+					subFolder= "\\discarded";
 					fattura.setCliente(null);
 					fattura.setStato(Stato.DISCARDED);
 
