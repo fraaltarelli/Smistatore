@@ -18,12 +18,12 @@ import org.springframework.stereotype.Component;
 
 import it.objectmethod.smistatore.jaxb.FatturaElettronicaMain;
 import it.objectmethod.smistatore.jaxb.model.FatturaElettronica;
-import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.Fattura;
 import it.objectmethod.smistatore.model.Fattura.Stato;
+import it.objectmethod.smistatore.model.SoggettoCommerciale;
 import it.objectmethod.smistatore.repository.ApplicationConfigRepository;
-import it.objectmethod.smistatore.repository.ClienteRepository;
 import it.objectmethod.smistatore.repository.FatturaRepository;
+import it.objectmethod.smistatore.repository.SoggettoCommercialeRepository;
 
 @Component
 public class SmistatoreScheduler {
@@ -34,7 +34,7 @@ public class SmistatoreScheduler {
 	ApplicationConfigRepository applicationConfigRepo;
 
 	@Autowired
-	ClienteRepository clienteRepo;
+	SoggettoCommercialeRepository scRepo;
 
 	@Autowired
 	FatturaRepository fatturaRepo;
@@ -43,7 +43,7 @@ public class SmistatoreScheduler {
 	FatturaElettronicaMain fatturaElettronicaMain;
 
 
-	@Scheduled(fixedDelay = 100000)
+	@Scheduled(fixedDelay = 10000)
 	public void scheduleFixedDelayTask() {
 		String subFolder="";
 
@@ -54,7 +54,7 @@ public class SmistatoreScheduler {
 				LOGGER.debug("copying " + path.toString());
 
 				Fattura fattura = new Fattura();
-				Cliente clienteTrovato=null;
+				SoggettoCommerciale scTrovato = null;
 
 				FatturaElettronica entity = fatturaElettronicaMain.unmarshalFattura(path.toString());
 
@@ -76,22 +76,22 @@ public class SmistatoreScheduler {
 				fattura.setNumeroDocumento(numeroDocumento);
 				fattura.setDataDocumento(dataDocumento);
 
-				clienteTrovato = clienteRepo.findOneBySearchedVatNumber(partitaIva);
+				scTrovato = scRepo.findOneBySearchedVatNumber(partitaIva);
 
-				if(clienteTrovato==null) {
-					clienteTrovato = clienteRepo.findOneBySearchedFiscalCode(codiceFiscale);
+				if(scTrovato==null) {
+					scTrovato = scRepo.findOneBySearchedFiscalCode(codiceFiscale);
 				}
 
 
-				if(clienteTrovato!=null) {
-					LOGGER.debug("cliente trovato id: "+clienteTrovato.getId());
+				if(scTrovato!=null) {
+					LOGGER.debug("cliente trovato id: "+scTrovato.getId());
 
-					subFolder= "\\"+clienteTrovato.getId();
-					fattura.setCliente(clienteTrovato);
+					subFolder= "\\"+scTrovato.getId();
+					fattura.setSoggCommerciale(scTrovato);
 					fattura.setStato(Stato.PROCESSED);;
 				} else {
 					subFolder= "\\discarded";
-					fattura.setCliente(null);
+					fattura.setSoggCommerciale(null);
 					fattura.setStato(Stato.DISCARDED);
 
 				}

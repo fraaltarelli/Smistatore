@@ -31,7 +31,7 @@ public class Fattura {
 	private String nomeFile;
 	
 	@ManyToOne
-	private Cliente cliente;
+	private SoggettoCommerciale soggCommerciale;
 
 	@Column(name="numero_documento")
 	private Integer numeroDocumento;
@@ -45,15 +45,17 @@ public class Fattura {
 	
 	
 	
-	public Cliente getCliente() {
-		return cliente;
+
+	
+	
+	public SoggettoCommerciale getSoggCommerciale() {
+		return soggCommerciale;
 	}
 
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
+	public void setSoggCommerciale(SoggettoCommerciale soggCommerciale) {
+		this.soggCommerciale = soggCommerciale;
 	}
-	
-	
+
 	public Integer getId() {
 		return id;
 	}

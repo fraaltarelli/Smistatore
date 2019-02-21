@@ -42,13 +42,13 @@ import org.springframework.web.multipart.MultipartFile;
 import it.objectmethod.smistatore.TransactionFilter;
 import it.objectmethod.smistatore.jaxb.FatturaElettronicaMain;
 import it.objectmethod.smistatore.jaxb.model.FatturaElettronica;
-import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.Fattura;
 import it.objectmethod.smistatore.model.Fattura.Stato;
 import it.objectmethod.smistatore.model.RaccoltaToken;
+import it.objectmethod.smistatore.model.SoggettoCommerciale;
 import it.objectmethod.smistatore.repository.ApplicationConfigRepository;
-import it.objectmethod.smistatore.repository.ClienteRepository;
 import it.objectmethod.smistatore.repository.FatturaRepository;
+import it.objectmethod.smistatore.repository.SoggettoCommercialeRepository;
 import it.objectmethod.smistatore.repository.UtenteRepository;
 
 
@@ -64,7 +64,7 @@ public class FatturaRestController {
 	UtenteRepository utenteRepo;
 
 	@Autowired
-	ClienteRepository clienteRepo;
+	SoggettoCommercialeRepository scRepo;
 
 	@Autowired
 	RaccoltaToken raccoltaToken;
@@ -80,9 +80,9 @@ public class FatturaRestController {
 	String subFolder = "\\discarded";
 
 
-	@RequestMapping(value="fattura/scarica/{idFattura}/{idCliente}", method = RequestMethod.GET)
+	@RequestMapping(value="fattura/scarica/{idFattura}/{idSC}", method = RequestMethod.GET)
 	public void downloadFile(
-			@PathVariable("idFattura") Integer idFattura, @PathVariable("idCliente") Integer idCliente,
+			@PathVariable("idFattura") Integer idFattura, @PathVariable("idSC") Integer idSC,
 			HttpServletResponse response) throws IOException {
 
 		try {
@@ -90,8 +90,8 @@ public class FatturaRestController {
 			String nomeFileXml = fattura.getNomeFile();
 
 			String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
-			if(idCliente!=0) {
-				subFolder="\\"+idCliente;
+			if(idSC!=0) {
+				subFolder="\\"+idSC;
 			}
 			String pathXml = outputDirectory+subFolder+"\\"+nomeFileXml;
 
@@ -116,9 +116,9 @@ public class FatturaRestController {
 
 
 
-	@RequestMapping(value="fattura/by-xsl/{idFattura}/{idCliente}/{foglioDiStile}", method = RequestMethod.GET)
+	@RequestMapping(value="fattura/by-xsl/{idFattura}/{idSC}/{foglioDiStile}", method = RequestMethod.GET)
 	public void fatturaHtmlDaFoglioDiStile(
-			@PathVariable("idFattura") Integer idFattura, @PathVariable("idCliente") Integer idCliente,
+			@PathVariable("idFattura") Integer idFattura, @PathVariable("idSC") Integer idSC,
 			@PathVariable("foglioDiStile") String foglioDiStile, HttpServletResponse response) throws IOException {
 
 		try {
@@ -127,8 +127,8 @@ public class FatturaRestController {
 
 			String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
 
-			if(idCliente!=0) {
-				subFolder="\\"+idCliente;
+			if(idSC!=0) {
+				subFolder="\\"+idSC;
 			}
 			String pathXml = outputDirectory+subFolder+"\\"+nomeFileXml;
 
@@ -161,11 +161,11 @@ public class FatturaRestController {
 	@GetMapping("/fattura/rifiuta/{idFattura}")
 	void rifiutaFattura(@PathVariable("idFattura") Integer idFattura) {
 		Fattura fattura = fatturaRepo.findOne(idFattura);
-		Cliente cliente = fattura.getCliente();
-		Integer idCliente = cliente.getId();
+		SoggettoCommerciale sc = fattura.getSoggCommerciale();
+		Integer idCliente = sc.getId();
 		String nomeFileXml = fattura.getNomeFile();
 		fattura.setStato(Stato.REFUSED);
-		fattura.setCliente(null);
+		fattura.setSoggCommerciale(null);
 		fatturaRepo.save(fattura);
 
 		String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
@@ -214,7 +214,7 @@ public class FatturaRestController {
 
 		Map<String, Integer> map = raccoltaToken.getRaccoltaToken();
 		int utenteId=map.get(token);
-		Cliente cliente = utenteRepo.findClienteFromId(utenteId);
+		SoggettoCommerciale sc = utenteRepo.findSCFromId(utenteId);
 
 		InputStream is=null;
 		try {
@@ -226,7 +226,7 @@ public class FatturaRestController {
 		FatturaElettronica entity = fatturaElettronicaMain.unmarshalFattura(is);
 
 		Fattura fattura = new Fattura();
-		Cliente clienteTrovato=null;
+		SoggettoCommerciale scTrovato=null;
 		String partitaIva = null;
 		String codiceFiscale = null;
 		String dataDocumento = null;
@@ -246,20 +246,20 @@ public class FatturaRestController {
 		fattura.setNumeroDocumento(numeroDocumento);
 		fattura.setDataDocumento(dataDocumento);
 
-		clienteTrovato = clienteRepo.findOneBySearchedVatNumber(partitaIva);
+		scTrovato = scRepo.findOneBySearchedVatNumber(partitaIva);
 
 
-		if(clienteTrovato == null) {
-			clienteTrovato = clienteRepo.findOneBySearchedFiscalCode(codiceFiscale);
+		if(scTrovato == null) {
+			scTrovato = scRepo.findOneBySearchedFiscalCode(codiceFiscale);
 		}
 
 
-		if(clienteTrovato!=null) {
+		if(scTrovato!=null) {
 
-			if(clienteTrovato.equals(cliente)) {
-				subFolder= "\\"+clienteTrovato.getId();
+			if(scTrovato.equals(sc)) {
+				subFolder= "\\"+scTrovato.getId();
 
-				fattura.setCliente(clienteTrovato);
+				fattura.setSoggCommerciale(scTrovato);
 				fattura.setStato(Stato.SENT);
 
 
@@ -288,15 +288,15 @@ public class FatturaRestController {
 				messaggio = "fattura caricata";
 			}
 			else {
-				LOGGER.debug("cliente non associato alla fattura");
-				messaggio = "cliente non associato alla fattura";
+				LOGGER.debug("soggetto commerciale non associato alla fattura");
+				messaggio = "soggetto commerciale non associato alla fattura";
 			}
 
 		} 
 
 		else {
-			LOGGER.debug("cliente non trovato");
-			messaggio = "cliente non trovato";
+			LOGGER.debug("soggetto commerciale non trovato");
+			messaggio = "soggetto commerciale non trovato";
 
 		}
 		return messaggio;
@@ -312,7 +312,7 @@ public class FatturaRestController {
 			@RequestHeader("Authorization") String token){
 		Map<String, Integer> map = raccoltaToken.getRaccoltaToken();
 		int utenteId=map.get(token);
-		Cliente cliente = utenteRepo.findClienteFromId(utenteId);
+		SoggettoCommerciale sc = utenteRepo.findSCFromId(utenteId);
 		List<Fattura> list = new ArrayList<Fattura>();
 		Stato stato = null;
 		if (!statoFattura.equals("null")) {
@@ -320,10 +320,10 @@ public class FatturaRestController {
 		}
 		if(isAdmin == false) {
 			if(stato==null) {
-				list = fatturaRepo.findBycliente(cliente);
+				list = fatturaRepo.findBySC(sc);
 			}
 			else {
-				list = fatturaRepo.findByStatoFatturaCliente(stato, cliente);
+				list = fatturaRepo.findByStatoFatturaSC(stato, sc);
 			}
 		}
 		else {

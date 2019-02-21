@@ -15,18 +15,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.Fattura;
 import it.objectmethod.smistatore.model.Fattura.Stato;
+import it.objectmethod.smistatore.model.SoggettoCommerciale;
 import it.objectmethod.smistatore.repository.ApplicationConfigRepository;
-import it.objectmethod.smistatore.repository.ClienteRepository;
 import it.objectmethod.smistatore.repository.FatturaRepository;
+import it.objectmethod.smistatore.repository.SoggettoCommercialeRepository;
 
 @RestController
 @RequestMapping("/api")
-public class ClienteRestController {
+public class SoggettoCommercialeRestController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ClienteRestController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SoggettoCommercialeRestController.class);
 
 	@Autowired
 	ApplicationConfigRepository applicationConfigRepo;
@@ -35,32 +35,32 @@ public class ClienteRestController {
 	FatturaRepository fatturaRepo;
 
 	@Autowired
-	ClienteRepository clienteRepo;
+	SoggettoCommercialeRepository scRepo;
 
 
-	@GetMapping("/cliente/spostamentoFattura/{clienteId}/{fatturaId}")
-	String spostamentoFattura(@PathVariable("clienteId") Integer clienteId, @PathVariable("fatturaId") Integer fatturaId){
-		Cliente cliente = clienteRepo.findOne(clienteId);
+	@GetMapping("/sc/spostamentoFattura/{scId}/{fatturaId}")
+	String spostamentoFattura(@PathVariable("clienteId") Integer scId, @PathVariable("fatturaId") Integer fatturaId){
+		SoggettoCommerciale sc = scRepo.findOne(scId);
 		Fattura fattura = fatturaRepo.findOne(fatturaId);
-		String messaggio = "spostamento fattura "+fattura.getNomeFile()+" al Cliente "+cliente.getName()+" non eseguibile";
+		String messaggio = "spostamento fattura "+fattura.getNomeFile()+" al Soggetto Commerciale "+sc.getDenominazione()+" non eseguibile";
 
-		if(cliente!=null && fattura!=null) {
+		if(sc!=null && fattura!=null) {
 			if(fattura.getStato()==Stato.DISCARDED) {
 				File sourceDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\scarti\\"+fattura.getNomeFile());
-				File destDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\"+clienteId);
+				File destDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\"+scId);
 				try {
 					FileUtils.moveFileToDirectory(sourceDir, destDir, true);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				fattura.setCliente(cliente);
+				fattura.setSoggCommerciale(sc);
 				fattura.setStato(Stato.CHECK_REQ);
 				fatturaRepo.save(fattura);
-				LOGGER.debug("Spostamento fattura "+fattura.getNomeFile()+" al Cliente "+cliente.getName()+" riuscito");
-				messaggio = "spostamento fattura "+fattura.getNomeFile()+" al Cliente "+cliente.getName()+" riuscito";
+				LOGGER.debug("Spostamento fattura "+fattura.getNomeFile()+" al Soggetto Commerciale "+sc.getDenominazione()+" riuscito");
+				messaggio = "spostamento fattura "+fattura.getNomeFile()+" al Soggetto Commerciale "+sc.getDenominazione()+" riuscito";
 			}
 			else {
-				LOGGER.debug("Spostamento fattura "+fattura.getNomeFile()+" al Cliente "+cliente.getName()+" non eseguibile");
+				LOGGER.debug("Spostamento fattura "+fattura.getNomeFile()+" al Soggetto Commerciale "+sc.getDenominazione()+" non eseguibile");
 			}
 		}
 
@@ -73,17 +73,17 @@ public class ClienteRestController {
 
 	
 
-	@PostMapping("/cliente/by-fattura")
-	public Cliente byFattura(@RequestBody Fattura fattura) {
+	@PostMapping("/sc/by-fattura")
+	public SoggettoCommerciale byFattura(@RequestBody Fattura fattura) {
 
-		Cliente cliente = fattura.getCliente();
-		return cliente;
+		SoggettoCommerciale sc = fattura.getSoggCommerciale();
+		return sc;
 	}
 
-	@GetMapping("/cliente/by-searchedName/{clienteNome}")
-	public List<Cliente> bySearchedName(@PathVariable("clienteNome") String clienteNome){
+	@GetMapping("/sc/by-searchedName/{scNome}")
+	public List<SoggettoCommerciale> bySearchedName(@PathVariable("scNome") String scNome){
 
-		return clienteRepo.findBySearchedName(clienteNome);
+		return scRepo.findBySearchedName(scNome);
 	}
 
 }

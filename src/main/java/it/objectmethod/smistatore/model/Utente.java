@@ -22,7 +22,7 @@ public class Utente {
 	private String password;
 	
 	@ManyToOne
-	private Cliente cliente;
+	private SoggettoCommerciale soggCommerciale;
 	
 	@Column(columnDefinition="tinyint(1) default 0")
 	private boolean isAdmin;
@@ -37,12 +37,13 @@ public class Utente {
 		this.isAdmin = isAdmin;
 	}
 
-	public Cliente getCliente() {
-		return cliente;
+
+	public SoggettoCommerciale getSoggCommerciale() {
+		return soggCommerciale;
 	}
 
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
+	public void setSoggCommerciale(SoggettoCommerciale soggCommerciale) {
+		this.soggCommerciale = soggCommerciale;
 	}
 
 	public Integer getId() {
