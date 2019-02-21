@@ -1,4 +1,4 @@
-function stampaFattureCliente(statoFattura){
+function stampaFattureSC(statoFattura){
 	var token = $("#token").text();
 	$.ajax({
 		type: "GET",
@@ -63,14 +63,14 @@ function mostraFiltroFatture(admin){
 		+'Filtra fatture per stato'
 		+'</button>'
 		+'<div class="dropdown-menu" aria-labelledby="dropdownMenu2">'
-		+'<button class="dropdown-item" type="button" onclick="stampaFattureCliente(\'PROCESSED\')">PROCESSED</button>'
-		+'<button class="dropdown-item" type="button" onclick="stampaFattureCliente(\'CHECK_REQ\')">CHECK_REQ</button>';
+		+'<button class="dropdown-item" type="button" onclick="stampaFattureSC(\'PROCESSED\')">PROCESSED</button>'
+		+'<button class="dropdown-item" type="button" onclick="stampaFattureSC(\'CHECK_REQ\')">CHECK_REQ</button>';
 	if(admin==true){
-		html+='<button class="dropdown-item" type="button" onclick="stampaFattureCliente(\'DISCARDED\')">DISCARDED</button>'
-			+'<button class="dropdown-item" type="button" onclick="stampaFattureCliente(\'REFUSED\')">REFUSED</button>';
+		html+='<button class="dropdown-item" type="button" onclick="stampaFattureSC(\'DISCARDED\')">DISCARDED</button>'
+			+'<button class="dropdown-item" type="button" onclick="stampaFattureSC(\'REFUSED\')">REFUSED</button>';
 	}
-	html+='<button class="dropdown-item" type="button" onclick="stampaFattureCliente(\'SENT\')">SENT</button>'
-		+'<button class="dropdown-item" type="button" onclick="stampaFattureCliente()">ALL</button>  </div> </div>'
+	html+='<button class="dropdown-item" type="button" onclick="stampaFattureSC(\'SENT\')">SENT</button>'
+		+'<button class="dropdown-item" type="button" onclick="stampaFattureSC()">ALL</button>  </div> </div>'
 		+'</div></div>';
 	$("#filtroFatturePerStatoDiv").html(html);
 
@@ -88,26 +88,26 @@ function mostraFatture(fatture){
 	html+='<th scope="col"> Numero Documento </th>'
 		+'<th scope="col"> Data Documento </th>'
 		+'<th scope="col"> Stato </th>'
-		+'<th scope="col"> Cliente </th>'
+		+'<th scope="col"> Soggetto Commerciale </th>'
 		+'</tr> </thead> <tbody>';
 
 	for(var i = 0; i < fatture.length; i++){
-		var cliente = fatture[i].cliente;
-		var nomeCliente = "nessun cliente";
-		var idCliente = 0;
-		if(cliente!=null){
-			idCliente=cliente.id;
-			nomeCliente=cliente.name;
+		var sc = fatture[i].soggCommerciale;
+		var nomeSC = "nessun soggetto commerciale";
+		var idSC = 0;
+		if(sc!=null){
+			idSC=sc.id;
+			nomeSC=sc.denominazione;
 		}
 
 		html += '<tr class="fatture-checkbox"> <th scope="row">'+(i+1)+'</th>  <td> <input type="checkbox" value="'+fatture[i].id+'" ';
 		if(fatture[i].stato != "DISCARDED"){
 			html+="disabled";
 		}
-		html+= '><button onclick="scaricaFattura('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+')" >'+fatture[i].nomeFile+'</button></td>'
-		+'<td><span onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'FoglioStileAssoSoftware.xsl\')">'
+		html+= '><button onclick="scaricaFattura('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idSC+"'"+')" >'+fatture[i].nomeFile+'</button></td>'
+		+'<td><span onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idSC+"'"+',\'FoglioStileAssoSoftware.xsl\')">'
         +'<i class="fas fa-align-justify"></i> </span>'
-        +'<span onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'fatturab2b.xsl\')">'
+        +'<span onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idSC+"'"+',\'fatturab2b.xsl\')">'
         +'<i class="fas fa-align-left"></i> </span> </td>';
 //		+'<td> <button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'FoglioStileAssoSoftware.xsl\')" >stile 1</button>'
 //		+'<button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'fatturab2b.xsl\')" >stile 2</button></td>';
@@ -132,7 +132,7 @@ function mostraFatture(fatture){
 		html+='<td>'+fatture[i].numeroDocumento+'</td>'
 		+'<td>'+fatture[i].dataDocumento+'</td> '
 		+'<td>'+fatture[i].stato+'</td>'
-		+'<td>'+nomeCliente+'</td>'
+		+'<td>'+nomeSC+'</td>'
 		+'<tr>';
 
 	}
@@ -146,11 +146,11 @@ function mostraFatture(fatture){
 
 
 
-function scaricaFattura(nomeFattura, idFattura, idCliente){
+function scaricaFattura(nomeFattura, idFattura, idSC){
 	var token = $("#token").text();
 	$.ajax({
 		type: "GET",
-		url: "/api/fattura/scarica/"+idFattura+"/"+idCliente,
+		url: "/api/fattura/scarica/"+idFattura+"/"+idSC,
 		cache: false,
 		headers: {
 			"Authorization": token
@@ -170,11 +170,11 @@ function scaricaFattura(nomeFattura, idFattura, idCliente){
 
 
 
-function apriFatturaFoglioDiStile(nomeFattura, idFattura, idCliente, foglioDiStile){
+function apriFatturaFoglioDiStile(nomeFattura, idFattura, idSC, foglioDiStile){
 	var token = $("#token").text();
 	$.ajax({
 		type: "GET",
-		url: "/api/fattura/by-xsl/"+idFattura+"/"+idCliente+"/"+foglioDiStile,
+		url: "/api/fattura/by-xsl/"+idFattura+"/"+idSC+"/"+foglioDiStile,
 		cache: false,
 		headers: {
 			"Authorization": token
@@ -205,7 +205,7 @@ function processaFattura(fatturaId){
 			"Authorization": token
 		},
 		success: function () {
-			stampaFattureCliente();
+			stampaFattureSC();
 		}
 	});
 
@@ -224,7 +224,7 @@ function rifiutaFattura(fatturaId){
 			"Authorization": token
 		},
 		success: function () {
-			stampaFattureCliente();
+			stampaFattureSC();
 		}
 	});
 
@@ -234,7 +234,7 @@ function rifiutaFattura(fatturaId){
 
 
 
-function assegnaAUnCliente(){
+function assegnaAUnSC(){
 	var token = $("#token").text();
 	var fattureId = [];
 	$(".fatture-checkbox input[type=checkbox]:checked").each(function(){
@@ -265,7 +265,7 @@ function assegnaAUnCliente(){
 					text += arrayItem+", ";
 				}
 				$("#riepilogoFattureSelezionate").text(text);
-				$("#ricercaClientePerNomeForm").show();
+				$("#ricercaSCPerNomeForm").show();
 			}
 		});
 
@@ -276,7 +276,7 @@ function assegnaAUnCliente(){
 
 
 
-function spostamentoFatture(clienteId){
+function spostamentoFatture(scId){
 	var token = $("#token").text();
 	var messaggi = "";
 
@@ -290,7 +290,7 @@ function spostamentoFatture(clienteId){
 		var fatturaId= fattureId[i];
 		$.ajax({
 			type: "GET",
-			url: "/api/cliente/spostamentoFattura/"+clienteId+"/"+fatturaId,
+			url: "/api/sc/spostamentoFattura/"+scId+"/"+fatturaId,
 			cache: false,
 			dataType: "text",
 			headers: {
@@ -299,8 +299,8 @@ function spostamentoFatture(clienteId){
 			success: function (messaggioSpostamentoFattura) { 
 				messaggi+= messaggioSpostamentoFattura+",";
 				$("#messaggioSpostamentoFatture").text(messaggi);
-				stampaFattureCliente();
-				$("#listaClientiPerNomeCercato").hide();
+				stampaFattureSC();
+				$("#listaSCPerNomeCercato").hide();
 			}
 		});
 
@@ -329,7 +329,7 @@ function verificaFileCaricato(){
 			},
 			success : function(messaggio) {
 				$("#messaggioUploadFattura").text(messaggio);
-				stampaFattureCliente();
+				stampaFattureSC();
 				$("#fileUpload").val("");
 			}
 

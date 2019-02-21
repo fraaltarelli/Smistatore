@@ -74,6 +74,8 @@ public class SoggettoCommerciale {
 	public void setUtenti(List<Utente> utenti) {
 		this.utenti = utenti;
 	}
+	
+	@JsonIgnore
 	public List<Fattura> getFatture() {
 		return fatture;
 	}

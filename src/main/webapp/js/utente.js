@@ -19,7 +19,7 @@ function login(){
 				$("#loggatoDiv").show();
 				$("#token").text(token);
 				$("#tokenDiv").hide();
-				stampaFattureCliente();
+				stampaFattureSC();
 			}
 			else{
 				$("#messaggio").text("login non valido");

@@ -19,7 +19,7 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="/js/utente.js"></script>
 <script type="text/javascript" src="/js/fattura.js"></script>
-<script type="text/javascript" src="/js/cliente.js"></script>
+<script type="text/javascript" src="/js/soggettoCommerciale.js"></script>
 
 <link rel="stylesheet" type="text/css" href="/css/style.css">
 
@@ -61,22 +61,22 @@
 			<div id="filtroFatturePerStatoDiv"></div>
 			<strong id="riepilogoFattureSelezionate"></strong>
 
-			<div id="ricercaClientePerNomeForm">
-				<input type="text" id="ricercaNomeCliente" size="40"
-					placeholder="ricerca Cliente per nome">
+			<div id="ricercaSCPerNomeForm">
+				<input type="text" id="ricercaNomeSC" size="40"
+					placeholder="ricerca Soggetto Commerciale per nome">
 
-				<button onclick="listaClientiPerNomeCercato()">Cerca</button>
+				<button onclick="listaSCPerNomeCercato()">Cerca</button>
 
 				<strong id="messaggioSpostamentoFatture"></strong>
 
-				<div id="listaClientiPerNomeCercato"></div>
+				<div id="listaSCPerNomeCercato"></div>
 
 			</div>
 			<!-- <strong id="messaggio2"></strong> -->
 			<br>
 			<button type="button" class="btn btn-success"
-				id="assegnaFattureButton" onclick="assegnaAUnCliente()">
-				assegna fatture selezionate a un cliente</button>
+				id="assegnaFattureButton" onclick="assegnaAUnSC()">
+				assegna fatture selezionate a un soggetto commerciale</button>
 			<strong id="messaggioSelezioneFatture"></strong>
 			<div id="stampaFattureDiv"></div>
 		</div>

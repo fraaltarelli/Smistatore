@@ -39,14 +39,14 @@ public class SoggettoCommercialeRestController {
 
 
 	@GetMapping("/sc/spostamentoFattura/{scId}/{fatturaId}")
-	String spostamentoFattura(@PathVariable("clienteId") Integer scId, @PathVariable("fatturaId") Integer fatturaId){
+	String spostamentoFattura(@PathVariable("scId") Integer scId, @PathVariable("fatturaId") Integer fatturaId){
 		SoggettoCommerciale sc = scRepo.findOne(scId);
 		Fattura fattura = fatturaRepo.findOne(fatturaId);
 		String messaggio = "spostamento fattura "+fattura.getNomeFile()+" al Soggetto Commerciale "+sc.getDenominazione()+" non eseguibile";
 
 		if(sc!=null && fattura!=null) {
 			if(fattura.getStato()==Stato.DISCARDED) {
-				File sourceDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\scarti\\"+fattura.getNomeFile());
+				File sourceDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\discarded\\"+fattura.getNomeFile());
 				File destDir = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+"\\"+scId);
 				try {
 					FileUtils.moveFileToDirectory(sourceDir, destDir, true);
