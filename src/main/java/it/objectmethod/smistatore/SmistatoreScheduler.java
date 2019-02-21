@@ -16,10 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import it.objectmethod.smistatore.jaxb.FatturaElettronicaMain;
+import it.objectmethod.smistatore.jaxb.model.FatturaElettronica;
 import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.Fattura;
 import it.objectmethod.smistatore.model.Fattura.Stato;
-import it.objectmethod.smistatore.model.UserHandlerReturnEntity;
 import it.objectmethod.smistatore.repository.ApplicationConfigRepository;
 import it.objectmethod.smistatore.repository.ClienteRepository;
 import it.objectmethod.smistatore.repository.FatturaRepository;
@@ -39,10 +40,10 @@ public class SmistatoreScheduler {
 	FatturaRepository fatturaRepo;
 
 	@Autowired
-	SaxParser sp;
+	FatturaElettronicaMain fatturaElettronicaMain;
 
 
-	@Scheduled(fixedDelay = 10000)
+	@Scheduled(fixedDelay = 100000)
 	public void scheduleFixedDelayTask() {
 		String subFolder="";
 
@@ -54,13 +55,24 @@ public class SmistatoreScheduler {
 
 				Fattura fattura = new Fattura();
 				Cliente clienteTrovato=null;
-				UserHandlerReturnEntity entity = sp.leggiXml(path.toString());
 
+				FatturaElettronica entity = fatturaElettronicaMain.unmarshalFattura(path.toString());
 
-				String partitaIva = entity.getPartitaIva();
-				String codiceFiscale = entity.getCodiceFiscale();
-				String dataDocumento = entity.getDataDocumento();
-				Integer numeroDocumento = entity.getNumeroDocumento();
+				String partitaIva = null;
+				String codiceFiscale = null;
+				String dataDocumento = null;
+				Integer numeroDocumento = 0;
+
+				try {
+					partitaIva = entity.getFatturaElettronicaHeader().getCessionarioCommittente().getDatiAnagrafici().getIdFiscaleIva().getIdCodice();
+					codiceFiscale = entity.getFatturaElettronicaHeader().getCessionarioCommittente().getDatiAnagrafici().getCodiceFiscale();
+					dataDocumento = entity.getFatturaElettronicaBody().getDatiGenerali().getDatiGeneraliDocumento().getData();
+					numeroDocumento = entity.getFatturaElettronicaBody().getDatiGenerali().getDatiGeneraliDocumento().getNumero();
+				} catch (Exception e) {
+					LOGGER.debug("errore nel recupero dei dati da jaxb.model in smistatore scheduler");
+					e.printStackTrace();
+				}
+
 				fattura.setNumeroDocumento(numeroDocumento);
 				fattura.setDataDocumento(dataDocumento);
 
@@ -93,12 +105,11 @@ public class SmistatoreScheduler {
 				LOGGER.debug("destination File=" + d2);
 				Files.move(path, d2, REPLACE_EXISTING);
 				fatturaRepo.save(fattura);
-
 			}
+
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-
 
 	}
 

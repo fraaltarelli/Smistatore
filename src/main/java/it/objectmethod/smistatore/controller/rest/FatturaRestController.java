@@ -4,7 +4,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -40,13 +39,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import it.objectmethod.smistatore.SaxParser;
 import it.objectmethod.smistatore.TransactionFilter;
+import it.objectmethod.smistatore.jaxb.FatturaElettronicaMain;
+import it.objectmethod.smistatore.jaxb.model.FatturaElettronica;
 import it.objectmethod.smistatore.model.Cliente;
 import it.objectmethod.smistatore.model.Fattura;
 import it.objectmethod.smistatore.model.Fattura.Stato;
 import it.objectmethod.smistatore.model.RaccoltaToken;
-import it.objectmethod.smistatore.model.UserHandlerReturnEntity;
 import it.objectmethod.smistatore.repository.ApplicationConfigRepository;
 import it.objectmethod.smistatore.repository.ClienteRepository;
 import it.objectmethod.smistatore.repository.FatturaRepository;
@@ -71,7 +70,7 @@ public class FatturaRestController {
 	RaccoltaToken raccoltaToken;
 
 	@Autowired
-	SaxParser saxParser;
+	FatturaElettronicaMain fatturaElettronicaMain;
 
 	@Autowired
 	ApplicationConfigRepository applicationConfigRepo;
@@ -224,18 +223,25 @@ public class FatturaRestController {
 			e.printStackTrace();
 		}
 
-
-		UserHandlerReturnEntity entity = saxParser.verificaXml(is);
-
+		FatturaElettronica entity = fatturaElettronicaMain.unmarshalFattura(is);
 
 		Fattura fattura = new Fattura();
 		Cliente clienteTrovato=null;
+		String partitaIva = null;
+		String codiceFiscale = null;
+		String dataDocumento = null;
+		Integer numeroDocumento = 0;
 
+		try {
+			partitaIva = entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getIdFiscaleIva().getIdCodice();
+			codiceFiscale = entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getCodiceFiscale();
+			dataDocumento = entity.getFatturaElettronicaBody().getDatiGenerali().getDatiGeneraliDocumento().getData();
+			numeroDocumento = entity.getFatturaElettronicaBody().getDatiGenerali().getDatiGeneraliDocumento().getNumero();
+		} catch (Exception e) {
+			LOGGER.debug("errore nel recupero dei dati da jaxb.model in fattura rest controller");
+			e.printStackTrace();
+		}
 
-		String partitaIva = entity.getPartitaIva();
-		String codiceFiscale = entity.getCodiceFiscale();
-		String dataDocumento = entity.getDataDocumento();
-		Integer numeroDocumento = entity.getNumeroDocumento();
 
 		fattura.setNumeroDocumento(numeroDocumento);
 		fattura.setDataDocumento(dataDocumento);
@@ -257,8 +263,14 @@ public class FatturaRestController {
 				fattura.setStato(Stato.SENT);
 
 
-				String fileOutput = applicationConfigRepo.findValueBySearchedKey("path.output")+subFolder+"\\"+fatturaCaricata.getOriginalFilename();
+				String directoryCliente = applicationConfigRepo.findValueBySearchedKey("path.output")+subFolder;
+
+				File directory = new File(directoryCliente);
+				directory.mkdir();
+
+				String fileOutput = directoryCliente+"\\"+fatturaCaricata.getOriginalFilename();
 				File fatturaFile = new File(fileOutput);
+
 
 				try {
 					fatturaCaricata.transferTo(fatturaFile);
