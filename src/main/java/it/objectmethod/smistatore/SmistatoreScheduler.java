@@ -57,8 +57,9 @@ public class SmistatoreScheduler {
 				LOGGER.debug("copying " + path.toString());
 
 				Fattura fattura = new Fattura();
-				SoggettoCommerciale scTrovato = null;
+				SoggettoCommerciale ccTrovato = null;
 				SoggettoCommerciale cp = new SoggettoCommerciale();
+				SoggettoCommerciale cpTrovato = new SoggettoCommerciale();
 
 				FatturaElettronica entity = fatturaElettronicaMain.unmarshalFattura(path.toString());
 
@@ -75,66 +76,69 @@ public class SmistatoreScheduler {
 					numeroDocumento = entity.getFatturaElettronicaBody().getDatiGenerali().getDatiGeneraliDocumento().getNumero();
 
 				} catch (Exception e) {
-					LOGGER.debug("errore nel recupero dei dati da jaxb.model (dati generali e CC) in smistatore scheduler");
-					e.printStackTrace();
+					LOGGER.error("errore nel recupero dei dati da jaxb.model (dati generali e CC) in smistatore scheduler", e);
 				}
 
 				try {
-					cp.setCap(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getCap());
 					cp.setCodiceFiscale(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getCodiceFiscale());
-					cp.setComune(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getComune());
-					cp.setDenominazione(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getAnagrafica().getDenominazione());
 					cp.setIdCodice(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getIdFiscaleIva().getIdCodice());
-					cp.setIdPaese(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getIdFiscaleIva().getIdPaese());
-					cp.setIndirizzo(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getIndirizzo());
-					cp.setNazione(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getNazione());
-					cp.setProvincia(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getProvincia());
-					cp.setRegimeFiscale(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getRegimeFiscale());
-					cp.setTipo("CP");
+
 				} catch (Exception e) {
-					LOGGER.debug("errore nel recupero dei dati da jaxb.model (CP) in smistatore scheduler");
-					e.printStackTrace();
+					LOGGER.error("errore nel recupero dei dati da jaxb.model (CP in entrata) in smistatore scheduler", e);
 				}
+
+				cpTrovato = scRepo.findOneBySearchedVatNumber(cp.getIdCodice());
+
+				if(cpTrovato==null) {
+					cpTrovato = scRepo.findOneBySearchedFiscalCode(cp.getCodiceFiscale());
+				}
+
+				if(cpTrovato!=null) {
+					LOGGER.debug("cp trovato id: "+cpTrovato.getId());
+					cp = cpTrovato;
+				}
+				else {
+					try {
+						cp.setCap(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getCap());
+						cp.setComune(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getComune());
+						cp.setDenominazione(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getAnagrafica().getDenominazione());
+						cp.setIdPaese(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getIdFiscaleIva().getIdPaese());
+						cp.setIndirizzo(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getIndirizzo());
+						cp.setNazione(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getNazione());
+						cp.setProvincia(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getProvincia());
+						cp.setRegimeFiscale(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getRegimeFiscale());
+						cp.setTipo("CP");
+						scRepo.save(cp);	
+					} catch (Exception e) {
+						LOGGER.error("errore nel recupero dei dati da jaxb.model (nuovo CP) in smistatore scheduler", e);
+					}
+				}
+
+				fattura.setCp(cp);
 
 				fattura.setNumeroDocumento(numeroDocumento);
 				fattura.setDataDocumento(dataDocumento);
 
-				scTrovato = scRepo.findOneBySearchedVatNumber(partitaIva);
+				ccTrovato = scRepo.findOneBySearchedVatNumber(partitaIva);
 
-				if(scTrovato==null) {
-					scTrovato = scRepo.findOneBySearchedFiscalCode(codiceFiscale);
+				if(ccTrovato==null) {
+					ccTrovato = scRepo.findOneBySearchedFiscalCode(codiceFiscale);
 				}
 
 
-				if(scTrovato!=null) {
-					LOGGER.debug("cc trovato id: "+scTrovato.getId());
+				if(ccTrovato!=null) {
+					LOGGER.debug("cc trovato id: "+ccTrovato.getId());
 
-					subFolder= ""+scTrovato.getId();
-					fattura.setCc(scTrovato);
+					subFolder= ""+ccTrovato.getId();
+					fattura.setCc(ccTrovato);
 					fattura.setStato(Stato.PROCESSED);;
 				} else {
-					
+
 					subFolder= "discarded";
 					fattura.setCc(null);
 					fattura.setStato(Stato.DISCARDED);
-					
-					SoggettoCommerciale cpTrovato = null;
-					
-					cpTrovato = scRepo.findOneBySearchedVatNumber(cp.getIdCodice());
-
-					if(cpTrovato==null) {
-						cpTrovato = scRepo.findOneBySearchedFiscalCode(cp.getCodiceFiscale());
-					}
-
-					if(cpTrovato!=null) {
-						LOGGER.debug("cp trovato id: "+cpTrovato.getId());
-					}
-					else {
-						cpTrovato = scRepo.save(cp);
-					}
-					fattura.setCp(cpTrovato);
-
 				}
+
 				File destFile = new File(pathUtil.ritornaPath(applicationConfigRepo.findValueBySearchedKey("path.output"), subFolder));
 				destFile.mkdir();
 				Path outputDirectory = destFile.toPath();

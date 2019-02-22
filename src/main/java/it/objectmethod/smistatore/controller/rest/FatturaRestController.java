@@ -154,7 +154,7 @@ public class FatturaRestController {
 			out.flush();
 
 		} catch (Exception e) {
-			LOGGER.debug("errore apertura fattura con foglio di stile");
+			LOGGER.error("errore apertura fattura con foglio di stile", e);
 		}
 
 
@@ -247,8 +247,7 @@ public class FatturaRestController {
 			dataDocumento = entity.getFatturaElettronicaBody().getDatiGenerali().getDatiGeneraliDocumento().getData();
 			numeroDocumento = entity.getFatturaElettronicaBody().getDatiGenerali().getDatiGeneraliDocumento().getNumero();
 		} catch (Exception e) {
-			LOGGER.debug("errore nel recupero dei dati da jaxb.model in fattura rest controller");
-			e.printStackTrace();
+			LOGGER.error("errore nel recupero dei dati da jaxb.model in fattura rest controller", e);
 		}
 
 
@@ -314,13 +313,13 @@ public class FatturaRestController {
 	@GetMapping("/fattura/ritornaFatture/isAdmin-statoFattura/{isAdmin}/{statoFattura}")
 	List<Fattura> findByIdCliente(@PathVariable("isAdmin") Boolean isAdmin, @PathVariable("statoFattura") String statoFattura, 
 			@RequestHeader("Authorization") String token){
-		
+
 		Map<String, Integer> map = raccoltaToken.getRaccoltaToken();
 		int utenteId=map.get(token);
 		SoggettoCommerciale sc = utenteRepo.findSCFromId(utenteId);
 		List<Fattura> list = new ArrayList<Fattura>();
 		Stato stato = null;
-		
+
 		if (!statoFattura.equals("null")) {
 			stato = Stato.valueOf(statoFattura);
 		}

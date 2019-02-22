@@ -30,8 +30,7 @@ public class FatturaElettronicaMain {
 			fattura=(FatturaElettronica) unmarshallerObj.unmarshal(new FileReader(file));
 
 		}catch(Exception e){
-			LOGGER.debug("Errore unmarshalling fattura");
-			e.printStackTrace();
+			LOGGER.error("Errore unmarshalling fattura", e);
 		}
 
 		return fattura;
@@ -48,8 +47,7 @@ public class FatturaElettronicaMain {
 			fattura=(FatturaElettronica) unmarshallerObj.unmarshal(is);
 
 		}catch(Exception e){
-			LOGGER.debug("Errore unmarshalling fattura");
-			e.printStackTrace();
+			LOGGER.error("Errore unmarshalling fattura", e);
 		}
 
 		return fattura;
