@@ -6,6 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -31,7 +32,12 @@ public class Fattura {
 	private String nomeFile;
 	
 	@ManyToOne
-	private SoggettoCommerciale soggCommerciale;
+	@JoinColumn(name = "id_mittente")
+	private SoggettoCommerciale cp;
+	
+	@ManyToOne
+	@JoinColumn(name = "id_destinatario")
+	private SoggettoCommerciale cc;
 
 	@Column(name="numero_documento")
 	private Integer numeroDocumento;
@@ -47,13 +53,21 @@ public class Fattura {
 	
 
 	
-	
-	public SoggettoCommerciale getSoggCommerciale() {
-		return soggCommerciale;
+
+	public SoggettoCommerciale getCp() {
+		return cp;
 	}
 
-	public void setSoggCommerciale(SoggettoCommerciale soggCommerciale) {
-		this.soggCommerciale = soggCommerciale;
+	public void setCp(SoggettoCommerciale cp) {
+		this.cp = cp;
+	}
+
+	public SoggettoCommerciale getCc() {
+		return cc;
+	}
+
+	public void setCc(SoggettoCommerciale cc) {
+		this.cc = cc;
 	}
 
 	public Integer getId() {

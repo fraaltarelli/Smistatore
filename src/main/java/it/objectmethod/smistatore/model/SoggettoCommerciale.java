@@ -15,37 +15,37 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name="SoggettoCommerciale", uniqueConstraints= {
 		@UniqueConstraint(columnNames="id_codice"),
-		@UniqueConstraint(columnNames="codice_fiscale")
+        @UniqueConstraint(columnNames="codice_fiscale")
 })
 public class SoggettoCommerciale {
-
+	
 	@GeneratedValue
 	@Id
 	private Integer id;
-
+	
 	@Column(name="tipo")
 	private String tipo;
 
-
+	
 	//DatiAnagrafici
-
+	
 	//IdFiscaleIva
 	@Column(name="id_paese")
 	private String idPaese;
 	@Column(name="id_codice")
 	private String idCodice;
-
+	
 	@Column(name="codice_fiscale")
 	private String codiceFiscale;
-
+	
 	//Anagrafica
 	@Column(name="denominazione")
 	private String denominazione;
-
+	
 	@Column(name="regime_fiscale")
 	private String regimeFiscale;
-
-
+	
+	
 	//Sede
 	@Column(name="indirizzo")
 	private String indirizzo;
@@ -57,24 +57,24 @@ public class SoggettoCommerciale {
 	private String provincia;
 	@Column(name="nazione")
 	private String nazione;
-
-
+	
+	
 	@JsonIgnore
 	@OneToMany
 	List<Utente> utenti;
 
-	@OneToMany(mappedBy= "soggCommerciale")
+	@OneToMany
 	List<Fattura> fatture;
-
-
-
+	
+	
+	
 	public List<Utente> getUtenti() {
 		return utenti;
 	}
 	public void setUtenti(List<Utente> utenti) {
 		this.utenti = utenti;
 	}
-
+	
 	@JsonIgnore
 	public List<Fattura> getFatture() {
 		return fatture;
@@ -82,23 +82,23 @@ public class SoggettoCommerciale {
 	public void setFatture(List<Fattura> fatture) {
 		this.fatture = fatture;
 	}
-
-
+	
+	
 	public Integer getId() {
 		return id;
 	}
 	public void setId(Integer id) {
 		this.id = id;
 	}
-
+	
 	public String getTipo() {
 		return tipo;
 	}
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
-
-
+	
+	
 	public String getIdPaese() {
 		return idPaese;
 	}
@@ -159,5 +159,5 @@ public class SoggettoCommerciale {
 	public void setNazione(String nazione) {
 		this.nazione = nazione;
 	}
-
+	
 }

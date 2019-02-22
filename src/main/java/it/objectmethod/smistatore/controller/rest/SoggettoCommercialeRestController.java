@@ -63,7 +63,7 @@ public class SoggettoCommercialeRestController {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				fattura.setSoggCommerciale(sc);
+				fattura.setCc(sc);
 				fattura.setStato(Stato.CHECK_REQ);
 				fatturaRepo.save(fattura);
 
@@ -87,7 +87,7 @@ public class SoggettoCommercialeRestController {
 	@PostMapping("/sc/by-fattura")
 	public SoggettoCommerciale byFattura(@RequestBody Fattura fattura) {
 
-		SoggettoCommerciale sc = fattura.getSoggCommerciale();
+		SoggettoCommerciale sc = fattura.getCp();
 		return sc;
 	}
 

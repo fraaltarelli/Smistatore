@@ -166,16 +166,16 @@ public class FatturaRestController {
 	@GetMapping("/fattura/rifiuta/{idFattura}")
 	void rifiutaFattura(@PathVariable("idFattura") Integer idFattura) {
 		Fattura fattura = fatturaRepo.findOne(idFattura);
-		SoggettoCommerciale sc = fattura.getSoggCommerciale();
-		Integer idCliente = sc.getId();
+		SoggettoCommerciale sc = fattura.getCc();
+		Integer idCC = sc.getId();
 		String nomeFileXml = fattura.getNomeFile();
 		fattura.setStato(Stato.REFUSED);
-		fattura.setSoggCommerciale(null);
+		fattura.setCc(null);
 		fatturaRepo.save(fattura);
 
 		String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
 
-		String inputPath = pathUtil.ritornaPath(outputDirectory, ""+idCliente, nomeFileXml);
+		String inputPath = pathUtil.ritornaPath(outputDirectory, ""+idCC, nomeFileXml);
 		String outputPath = pathUtil.ritornaPath(outputDirectory, "discarded", nomeFileXml); 
 
 		Path input = Paths.get(inputPath);
@@ -267,11 +267,8 @@ public class FatturaRestController {
 
 			if(scTrovato.equals(sc)) {
 				subFolder= ""+scTrovato.getId();
-
-				fattura.setSoggCommerciale(scTrovato);
+				fattura.setCc(scTrovato);
 				fattura.setStato(Stato.SENT);
-
-
 				String directoryCliente = pathUtil.ritornaPath(applicationConfigRepo.findValueBySearchedKey("path.output"), subFolder);
 
 				File directory = new File(directoryCliente);
@@ -280,7 +277,6 @@ public class FatturaRestController {
 				String fileOutput = pathUtil.ritornaPath(directoryCliente,fatturaCaricata.getOriginalFilename());
 				File fatturaFile = new File(fileOutput);
 
-
 				try {
 					fatturaCaricata.transferTo(fatturaFile);
 				} catch (IllegalStateException e) {
@@ -288,7 +284,6 @@ public class FatturaRestController {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
 
 				fattura.setNomeFile(fatturaFile.getName());
 				fatturaRepo.save(fattura);
@@ -319,11 +314,13 @@ public class FatturaRestController {
 	@GetMapping("/fattura/ritornaFatture/isAdmin-statoFattura/{isAdmin}/{statoFattura}")
 	List<Fattura> findByIdCliente(@PathVariable("isAdmin") Boolean isAdmin, @PathVariable("statoFattura") String statoFattura, 
 			@RequestHeader("Authorization") String token){
+		
 		Map<String, Integer> map = raccoltaToken.getRaccoltaToken();
 		int utenteId=map.get(token);
 		SoggettoCommerciale sc = utenteRepo.findSCFromId(utenteId);
 		List<Fattura> list = new ArrayList<Fattura>();
 		Stato stato = null;
+		
 		if (!statoFattura.equals("null")) {
 			stato = Stato.valueOf(statoFattura);
 		}

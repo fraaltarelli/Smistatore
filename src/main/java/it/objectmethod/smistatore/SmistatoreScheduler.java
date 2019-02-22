@@ -107,20 +107,32 @@ public class SmistatoreScheduler {
 
 
 				if(scTrovato!=null) {
-					LOGGER.debug("cliente trovato id: "+scTrovato.getId());
+					LOGGER.debug("cc trovato id: "+scTrovato.getId());
 
 					subFolder= ""+scTrovato.getId();
-					fattura.setSoggCommerciale(scTrovato);
+					fattura.setCc(scTrovato);
 					fattura.setStato(Stato.PROCESSED);;
 				} else {
+					
 					subFolder= "discarded";
-					fattura.setSoggCommerciale(null);
+					fattura.setCc(null);
 					fattura.setStato(Stato.DISCARDED);
-					try {
-						scRepo.save(cp);
-					} catch (Exception e) {
-						LOGGER.debug("CP già presente");
+					
+					SoggettoCommerciale cpTrovato = null;
+					
+					cpTrovato = scRepo.findOneBySearchedVatNumber(cp.getIdCodice());
+
+					if(cpTrovato==null) {
+						cpTrovato = scRepo.findOneBySearchedFiscalCode(cp.getCodiceFiscale());
 					}
+
+					if(cpTrovato!=null) {
+						LOGGER.debug("cp trovato id: "+cpTrovato.getId());
+					}
+					else {
+						cpTrovato = scRepo.save(cp);
+					}
+					fattura.setCp(cpTrovato);
 
 				}
 				File destFile = new File(pathUtil.ritornaPath(applicationConfigRepo.findValueBySearchedKey("path.output"), subFolder));

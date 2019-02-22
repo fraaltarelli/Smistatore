@@ -17,11 +17,11 @@ public interface FatturaRepository extends JpaRepository<Fattura, Integer>{
 	@Query("select f from Fattura f where f.stato= :status")
 	public List<Fattura> findByStatoFattura(@Param("status") Enum status);
 	
-	@Query("select f from Fattura f where f.stato= :status AND f.soggCommerciale = :sc")
+	@Query("select f from Fattura f where f.stato= :status AND f.cc = :sc")
 	public List<Fattura> findByStatoFatturaSC(@Param("status") Enum status, @Param("sc") SoggettoCommerciale sc);
 
 	public Fattura findBynomeFile(String name);
 
-	@Query("select f from Fattura f where f.soggCommerciale = :sc")
+	@Query("select f from Fattura f where f.cc = :sc")
 	public List<Fattura> findBySC(@Param("sc") SoggettoCommerciale sc);
 }

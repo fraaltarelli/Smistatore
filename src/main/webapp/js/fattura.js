@@ -92,7 +92,7 @@ function mostraFatture(fatture){
 		+'</tr> </thead> <tbody>';
 
 	for(var i = 0; i < fatture.length; i++){
-		var sc = fatture[i].soggCommerciale;
+		var sc = fatture[i].cc;
 		var nomeSC = "nessun soggetto commerciale";
 		var idSC = 0;
 		if(sc!=null){
