@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import it.objectmethod.smistatore.PathUtil;
 import it.objectmethod.smistatore.TransactionFilter;
 import it.objectmethod.smistatore.jaxb.FatturaElettronicaMain;
 import it.objectmethod.smistatore.jaxb.model.FatturaElettronica;
@@ -75,9 +76,10 @@ public class FatturaRestController {
 	@Autowired
 	ApplicationConfigRepository applicationConfigRepo;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
+	@Autowired
+	PathUtil pathUtil;
 
-	String subFolder = "\\discarded";
+	private static final Logger LOGGER = LoggerFactory.getLogger(TransactionFilter.class);
 
 
 	@RequestMapping(value="fattura/scarica/{idFattura}/{idSC}", method = RequestMethod.GET)
@@ -88,12 +90,13 @@ public class FatturaRestController {
 		try {
 			Fattura fattura = fatturaRepo.findOne(idFattura);
 			String nomeFileXml = fattura.getNomeFile();
+			String subFolder = "discarded";
 
 			String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
 			if(idSC!=0) {
-				subFolder="\\"+idSC;
+				subFolder=""+idSC;
 			}
-			String pathXml = outputDirectory+subFolder+"\\"+nomeFileXml;
+			String pathXml = pathUtil.ritornaPath(outputDirectory, subFolder, nomeFileXml);
 
 
 			File file = new File(pathXml);
@@ -124,18 +127,20 @@ public class FatturaRestController {
 		try {
 			Fattura fattura = fatturaRepo.findOne(idFattura);
 			String nomeFileXml = fattura.getNomeFile();
+			String subFolder = "discarded";
 
 			String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
 
 			if(idSC!=0) {
-				subFolder="\\"+idSC;
+				subFolder=""+idSC;
 			}
-			String pathXml = outputDirectory+subFolder+"\\"+nomeFileXml;
+
+			String pathXml = pathUtil.ritornaPath(outputDirectory, subFolder, nomeFileXml);
 
 
 			TransformerFactory factory = TransformerFactory.newInstance();
 			Templates template = factory.newTemplates(new StreamSource(
-					new FileInputStream(outputDirectory+"\\"+foglioDiStile+".xsl")));
+					new FileInputStream(pathUtil.ritornaPath(outputDirectory, foglioDiStile+".xsl"))));
 			Transformer xformer = template.newTransformer();
 
 			Source source = new StreamSource(new FileInputStream(pathXml));
@@ -169,10 +174,13 @@ public class FatturaRestController {
 		fatturaRepo.save(fattura);
 
 		String outputDirectory = applicationConfigRepo.findValueBySearchedKey("path.output");
-		String inputPath = outputDirectory+"\\"+idCliente+"\\"+nomeFileXml;
-		String outputPath = outputDirectory+"\\discarded\\"+nomeFileXml; 
+
+		String inputPath = pathUtil.ritornaPath(outputDirectory, ""+idCliente, nomeFileXml);
+		String outputPath = pathUtil.ritornaPath(outputDirectory, "discarded", nomeFileXml); 
+
 		Path input = Paths.get(inputPath);
 		Path output = Paths.get(outputPath);
+
 		try {
 			Files.move(input, output, REPLACE_EXISTING);
 		} catch (IOException e) {
@@ -211,6 +219,7 @@ public class FatturaRestController {
 			@RequestHeader("Authorization") String token) {
 
 		String messaggio = "errore nel caricamento della fattura";
+		String subFolder = "";
 
 		Map<String, Integer> map = raccoltaToken.getRaccoltaToken();
 		int utenteId=map.get(token);
@@ -257,18 +266,18 @@ public class FatturaRestController {
 		if(scTrovato!=null) {
 
 			if(scTrovato.equals(sc)) {
-				subFolder= "\\"+scTrovato.getId();
+				subFolder= ""+scTrovato.getId();
 
 				fattura.setSoggCommerciale(scTrovato);
 				fattura.setStato(Stato.SENT);
 
 
-				String directoryCliente = applicationConfigRepo.findValueBySearchedKey("path.output")+subFolder;
+				String directoryCliente = pathUtil.ritornaPath(applicationConfigRepo.findValueBySearchedKey("path.output"), subFolder);
 
 				File directory = new File(directoryCliente);
 				directory.mkdir();
 
-				String fileOutput = directoryCliente+"\\"+fatturaCaricata.getOriginalFilename();
+				String fileOutput = pathUtil.ritornaPath(directoryCliente,fatturaCaricata.getOriginalFilename());
 				File fatturaFile = new File(fileOutput);
 
 

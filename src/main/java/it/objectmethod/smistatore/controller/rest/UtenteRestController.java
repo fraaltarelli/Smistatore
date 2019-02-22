@@ -44,24 +44,24 @@ public class UtenteRestController {
 
 			Map<String, Integer> map =  raccoltaToken.getRaccoltaToken();
 			map.put(token, utenteId);  
-			
+
 		}
 
 
 		return token;
 	}
-	
+
 	@GetMapping("utente/isAdmin")
 	public boolean isAdmin(@RequestHeader("Authorization") String token) {
 		boolean isAdmin = false;
 		Map<String, Integer> map = raccoltaToken.getRaccoltaToken();
 		int utenteId=map.get(token);
 		Utente utente = utenteRepo.findOne(utenteId);
-		
+
 		if(utente.isAdmin()) {
 			isAdmin = true;
 		}
-		
+
 		return isAdmin;
 	}
 

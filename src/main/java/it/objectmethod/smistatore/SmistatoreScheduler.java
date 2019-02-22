@@ -42,6 +42,9 @@ public class SmistatoreScheduler {
 	@Autowired
 	FatturaElettronicaMain fatturaElettronicaMain;
 
+	@Autowired
+	PathUtil pathUtil;
+
 
 	@Scheduled(fixedDelay = 10000)
 	public void scheduleFixedDelayTask() {
@@ -55,6 +58,7 @@ public class SmistatoreScheduler {
 
 				Fattura fattura = new Fattura();
 				SoggettoCommerciale scTrovato = null;
+				SoggettoCommerciale cp = new SoggettoCommerciale();
 
 				FatturaElettronica entity = fatturaElettronicaMain.unmarshalFattura(path.toString());
 
@@ -63,13 +67,32 @@ public class SmistatoreScheduler {
 				String dataDocumento = null;
 				Integer numeroDocumento = 0;
 
+
 				try {
 					partitaIva = entity.getFatturaElettronicaHeader().getCessionarioCommittente().getDatiAnagrafici().getIdFiscaleIva().getIdCodice();
 					codiceFiscale = entity.getFatturaElettronicaHeader().getCessionarioCommittente().getDatiAnagrafici().getCodiceFiscale();
 					dataDocumento = entity.getFatturaElettronicaBody().getDatiGenerali().getDatiGeneraliDocumento().getData();
 					numeroDocumento = entity.getFatturaElettronicaBody().getDatiGenerali().getDatiGeneraliDocumento().getNumero();
+
 				} catch (Exception e) {
-					LOGGER.debug("errore nel recupero dei dati da jaxb.model in smistatore scheduler");
+					LOGGER.debug("errore nel recupero dei dati da jaxb.model (dati generali e CC) in smistatore scheduler");
+					e.printStackTrace();
+				}
+
+				try {
+					cp.setCap(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getCap());
+					cp.setCodiceFiscale(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getCodiceFiscale());
+					cp.setComune(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getComune());
+					cp.setDenominazione(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getAnagrafica().getDenominazione());
+					cp.setIdCodice(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getIdFiscaleIva().getIdCodice());
+					cp.setIdPaese(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getIdFiscaleIva().getIdPaese());
+					cp.setIndirizzo(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getIndirizzo());
+					cp.setNazione(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getNazione());
+					cp.setProvincia(entity.getFatturaElettronicaHeader().getCedentePrestatore().getSede().getProvincia());
+					cp.setRegimeFiscale(entity.getFatturaElettronicaHeader().getCedentePrestatore().getDatiAnagrafici().getRegimeFiscale());
+					cp.setTipo("CP");
+				} catch (Exception e) {
+					LOGGER.debug("errore nel recupero dei dati da jaxb.model (CP) in smistatore scheduler");
 					e.printStackTrace();
 				}
 
@@ -86,16 +109,21 @@ public class SmistatoreScheduler {
 				if(scTrovato!=null) {
 					LOGGER.debug("cliente trovato id: "+scTrovato.getId());
 
-					subFolder= "\\"+scTrovato.getId();
+					subFolder= ""+scTrovato.getId();
 					fattura.setSoggCommerciale(scTrovato);
 					fattura.setStato(Stato.PROCESSED);;
 				} else {
-					subFolder= "\\discarded";
+					subFolder= "discarded";
 					fattura.setSoggCommerciale(null);
 					fattura.setStato(Stato.DISCARDED);
+					try {
+						scRepo.save(cp);
+					} catch (Exception e) {
+						LOGGER.debug("CP già presente");
+					}
 
 				}
-				File destFile = new File(applicationConfigRepo.findValueBySearchedKey("path.output")+subFolder);
+				File destFile = new File(pathUtil.ritornaPath(applicationConfigRepo.findValueBySearchedKey("path.output"), subFolder));
 				destFile.mkdir();
 				Path outputDirectory = destFile.toPath();
 				Path d2 = outputDirectory.resolve(path.getFileName());	
