@@ -1,0 +1,1 @@
+$(document).on('click','.toRemoveParent',function(){ $(this).parent().remove(); });

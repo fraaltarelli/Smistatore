@@ -1,3 +1,112 @@
+numeroLinea=0;
+function inserimentoFattura(){
+	$("#bottoneInserimentoFattura").hide();
+	$("#formInserimentoFattura").show();
+}
+
+
+function aggiungiLineaDocumento(){
+	numeroLinea++;
+	var html= $("#dettaglioLinee").html()+'<div id="divLinea'+numeroLinea+'">NumeroLinea: <input type="text" id= "numeroLinea'+numeroLinea+'" readonly value="'+numeroLinea+'" maxlength="3" size="3"> &nbsp; &nbsp'
+	+'Descrizione: <input type="text" id="descrizioneLinea'+numeroLinea+'" maxlength="50" size="50"> &nbsp; &nbsp'
+	+'Quantita: <input type="text" id="quantitaLinea'+numeroLinea+'" placeholder="inserisci un numero decimale (es. 22.00)" maxlength="20" size="40"> &nbsp; &nbsp;'
+	+'<br>Prezzo Unitario: <input type="text" id="prezzoUnitarioLinea'+numeroLinea+'" placeholder="inserisci un numero decimale (es. 22.00)" maxlength="20" size="40"> &nbsp; &nbsp;'
+	+'Prezzo Totale: <input type="text" id="prezzoTotaleLinea'+numeroLinea+'" placeholder="inserisci un numero decimale (es. 22.00)" maxlength="20" size="40"> &nbsp; &nbsp;'
+	+'<br>AliquotaIVA: <input type="text" id="aliquotaIvaLinea'+numeroLinea+'" placeholder="inserisci un numero decimale (es. 22.00)" maxlength="20" size="40"> &nbsp; &nbsp;'
+	+'</div>';
+	$("#dettaglioLinee").html(html);
+
+	$("#aggiungiOrdineAcquistoBottone").prop("disabled", false);
+	$("#aggiungiContrattoBottone").prop("disabled", false);
+	$("#aggiungiConvenzioneBottone").prop("disabled", false);
+	$("#aggiungiRicezioneBottone").prop("disabled", false);
+
+	$("#rimuoviLineaDocumentoBottone").prop("disabled", false);
+	selectNumeroLineaDiv();
+}
+
+
+function rimuoviLineaDocumento(){
+	$("#divLinea"+numeroLinea).remove();
+	numeroLinea--;
+	selectNumeroLineaDiv();
+
+	if(numeroLinea==0){
+		$("#aggiungiOrdineAcquistoBottone").prop("disabled", true);
+		$("#aggiungiContrattoBottone").prop("disabled", true);
+		$("#aggiungiConvenzioneBottone").prop("disabled", true);
+		$("#aggiungiRicezioneBottone").prop("disabled", true);
+
+		$("#rimuoviLineaDocumentoBottone").prop("disabled", true);	
+	}
+
+}
+
+
+function selectNumeroLineaDiv(){
+	$(".selectNumeroLinea").each(function() {
+		var valore= $(this).val();		
+		var html= '';
+		for(var i=1; i<=numeroLinea; i++){
+			html+='<option value="'+i+'">'+i+'</option>';
+		} 
+		$(this).html(html);
+		$(this).val(valore);
+	});
+}
+
+
+function aggiungiOrdineAcquisto(){
+	var html = '<div class="ordineAcquistoDiv"><button class="toRemoveParent" type="button"> Rimuovi Ordine Acquisto </button>'
+		+'<br> Riferimento Numero Linea: <select class="selectNumeroLinea"></select> &nbsp; &nbsp;'
+		+'IdDocumento: <input type="number" min="1" max="100000" required> &nbsp; &nbsp;'
+		+'NumItem: <input type="number" min=1" max="100000" required> <br>'
+		+'CodiceCUP: <input type="text" maxlength="30" size="30" required> &nbsp; &nbsp;'
+		+'CodiceCIG: <input type="text" maxlength="30" size="30" required> '
+		+'</div>';
+	$("#datiOrdineAcquisto").append(html);
+	selectNumeroLineaDiv();
+}
+
+function aggiungiContratto(){
+	var html = '<div class="contrattoDiv"><button class="toRemoveParent" type="button"> Rimuovi Contratto </button>'
+		+'<br> Riferimento Numero Linea: <select class="selectNumeroLinea"> </select>&nbsp; &nbsp;'
+		+'IdDocumento: <input type="number" min="1" max="100000" required> &nbsp; &nbsp;'
+		+'NumItem: <input type="number" min=1" max="100000" required> <br>'
+		+'CodiceCUP: <input type="text" maxlength="30" size="30" required> &nbsp; &nbsp;'
+		+'CodiceCIG: <input type="text" maxlength="30" size="30" required> '
+		+'</div>';
+	$("#datiContratto").append(html);
+	selectNumeroLineaDiv();
+}
+
+function aggiungiConvenzione(){
+	var html = '<div class="convenzioneDiv"><button class="toRemoveParent" type="button"> Rimuovi Convenzione </button>'
+		+'<br> Riferimento Numero Linea: <select class="selectNumeroLinea"></select> &nbsp; &nbsp;'
+		+'IdDocumento: <input type="number" min="1" max="100000" required> &nbsp; &nbsp;'
+		+'NumItem: <input type="number" min=1" max="100000" required> <br>'
+		+'CodiceCUP: <input type="text" maxlength="30" size="30" required> &nbsp; &nbsp;'
+		+'CodiceCIG: <input type="text" maxlength="30" size="30" required> '
+		+'</div>';
+	$("#datiConvenzione").append(html);
+	selectNumeroLineaDiv();
+}
+
+function aggiungiRicezione(){
+	var html = '<div class="ricezioneDiv"><button class="toRemoveParent" type="button"> Rimuovi Ricezione </button>'
+		+'<br> Riferimento Numero Linea: <select class="selectNumeroLinea"></select> &nbsp; &nbsp;'
+		+'IdDocumento: <input type="number" min="1" max="100000" required> &nbsp; &nbsp;'
+		+'NumItem: <input type="number" min=1" max="100000" required> <br>'
+		+'CodiceCUP: <input type="text" maxlength="30" size="30" required> &nbsp; &nbsp;'
+		+'CodiceCIG: <input type="text" maxlength="30" size="30" required> '
+		+'</div>';
+	$("#datiRicezione").append(html);
+	selectNumeroLineaDiv();
+}
+
+
+
+
 function stampaFattureSC(statoFattura){
 	var token = $("#token").text();
 	$.ajax({
@@ -106,9 +215,9 @@ function mostraFatture(fatture){
 		}
 		html+= '><button onclick="scaricaFattura('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idSC+"'"+')" >'+fatture[i].nomeFile+'</button></td>'
 		+'<td><span onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idSC+"'"+',\'FoglioStileAssoSoftware.xsl\')">'
-        +'<i class="fas fa-align-justify"></i> </span>'
-        +'<span onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idSC+"'"+',\'fatturab2b.xsl\')">'
-        +'<i class="fas fa-align-left"></i> </span> </td>';
+		+'<i class="fas fa-align-justify"></i> </span>'
+		+'<span onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idSC+"'"+',\'fatturab2b.xsl\')">'
+		+'<i class="fas fa-align-left"></i> </span> </td>';
 //		+'<td> <button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'FoglioStileAssoSoftware.xsl\')" >stile 1</button>'
 //		+'<button style="display: block;" onclick="apriFatturaFoglioDiStile('+"'"+fatture[i].nomeFile+"'"+','+"'"+fatture[i].id+"'"+','+"'"+idCliente+"'"+',\'fatturab2b.xsl\')" >stile 2</button></td>';
 
