@@ -1,5 +1,10 @@
-Norimberga inglostadt goal
-Arsenal leicester goal
-Lecce lazio 2, 2+over1.5
-Milan juve goal
-Celta vigo  atl. Madrid  0-0
+Norimberga inglostadt nogoal
+Arsenal leicester nogoal
+Lecce lazio 1x
+Milan juve nogoal
+Celta vigo  atl. Madrid  over1.5 
+Luton barnsley 1
+Cardiff blackburn nogoal
+Reading huddersfield x2
+Valencia valladolid 2
+Watford norwich 2
